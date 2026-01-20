@@ -5,6 +5,7 @@
 # Value: Dictionary of reference data (range, units, explanation, advice)
 CONSULTATION_RESULTS = {
     "blood_pressure": {
+        "name": "Blood Pressure",
         "type": "compound",
         "gender_specific": False,
         "range": (90, 140, 60, 90),  # Normal systolic range in mmHg
@@ -14,6 +15,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Ensure adequate hydration and consider increasing salt intake if advised by a healthcare professional."
     },
     "pulse_rate": {
+        "name": "Pulse Rate",
         "type": "hilo",
         "gender_specific": False,
         "range": (60, 100),  # Normal resting heart rate in bpm
@@ -23,6 +25,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Consult a healthcare professional to rule out any underlying conditions."
     },
     "bmi": {
+        "name": "Body Mass Index (BMI)",
         "type": "hilo",
         "gender_specific": False,
         "range": (18.5, 24.9),  # Normal BMI range
@@ -32,6 +35,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Increase calorie intake with nutritious foods and consider strength training exercises."
     },
     "muscle_mass": {
+        "name": "Muscle Mass",
         "type": "lower_bound",
         "gender_specific": False,
         "range": (30, 100),  # Example range in %
@@ -41,6 +45,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Incorporate strength training and ensure adequate protein intake."
     },
     "average_peak_flow": {
+        "name": "Average Peak Flow",
         "type": "lower_bound",
         "range": (300, 700),  # Example range in L/min
         "unit": "L/min",
@@ -49,6 +54,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Consult a healthcare professional for assessment and possible treatment."
     },
     "body_fat_percentage": {
+        "name": "Body Fat Percentage",
         "type": "hilo",
         "gender_specific": True,
         "range": (10, 32, 10, 25),  # Example range in %
@@ -58,6 +64,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Ensure adequate calorie intake and consider strength training exercises."
     },
     "blood_oxygen_saturation": {
+        "name": "Blood Oxygen Saturation",
         "type": "lower_bound",
         "range": (92, 100),  # Normal SpO2 range in %
         "unit": "%",
@@ -66,6 +73,7 @@ CONSULTATION_RESULTS = {
         "advice_low": "Consult a healthcare professional for assessment and possible treatment."
     },
     "qrisk_score": {
+        "name": "QRISK Score",
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0, 20),  # Example range in %
@@ -78,6 +86,7 @@ CONSULTATION_RESULTS = {
 
 FULL_BLOOD_COUNT = {
     "haemoglobin": {
+        "name": "Haemoglobin",
         "type": "hilo",
         "gender_specific": True,
         "range": (120, 150, 130, 170),  #
@@ -87,6 +96,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Increase iron-rich foods in your diet and consider supplements if advised."
     },
     "red_blood_cell_count": {
+        "name": "Red Blood Cell Count",
         "type": "hilo",
         "gender_specific": True,
         "range": (4.2, 5.4, 4.7, 6.1),
@@ -96,6 +106,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "hct": {
+        "name": "Haematocrit (HCT)",
         "type": "hilo",
         "gender_specific": True,
         "range": (37, 47, 40, 54),
@@ -105,6 +116,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "mcv": {
+        "name": "Mean Corpuscular Volume",
         "type": "hilo",
         "gender_specific": False,
         "range": (80, 96),
@@ -114,6 +126,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "mch": {
+        "name": "Mean Corpuscular Haemoglobin",
         "type": "hilo",
         "gender_specific": False,
         "range": (27, 33),
@@ -123,6 +136,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "mchc": {
+        "name": "Mean Corpuscular Haemoglobin Concentration (MCHC)",
         "type": "hilo",
         "gender_specific": False,
         "range": (32, 36),
@@ -132,6 +146,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "rdw": {
+        "name": "Red Cell Distribution Width (RDW)",
         "type": "hilo", 
         "gender_specific": False,
         "range": (11.5, 14.5),
@@ -141,6 +156,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "platelets": {
+        "name": "Platelet Count",
         "type": "hilo",
         "gender_specific": False,
         "range": (150, 450),
@@ -150,6 +166,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Avoid injury and consult a healthcare professional."
     },
     "mpv": {
+        "name": "Mean Platelet Volume (MPV)",
         "type": "hilo",
         "gender_specific": False,
         "range": (7.5, 11.5),
@@ -159,6 +176,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Ensure adequate nutrition and consult a healthcare professional."
     },
     "white_blood_cell_count": {
+        "name": "White Blood Cell Count",
         "type": "hilo",
         "gender_specific": False,
         "range": (4.0, 11.0),
@@ -168,6 +186,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Avoid exposure to infections and consult a healthcare professional." 
     },
     "neutrophils": {
+        "name": "Neutrophils",
         "type": "hilo",
         "gender_specific": False,
         "range": (2.0, 7.5),
@@ -177,6 +196,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Avoid exposure to infections and consult a healthcare professional." 
     },
     "lymphocytes": {
+        "name": "Lymphocytes",
         "type": "hilo",
         "gender_specific": False,
         "range": (1.0, 4.0),
@@ -186,6 +206,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Avoid exposure to infections and consult a healthcare professional."
     },
     "monocytes": {
+        "name": "Monocytes",
         "type": "hilo",
         "gender_specific": False,
         "range": (0.2, 1.0),
@@ -195,6 +216,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "Avoid exposure to infections and consult a healthcare professional."
     },
     "eosinophils": {
+        "name": "Eosinophils",
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0.0, 0.5),
@@ -204,6 +226,7 @@ FULL_BLOOD_COUNT = {
         "advice_low": "No specific advice; low levels are generally not a concern." 
     },
     "basophils": {
+        "name": "Basophils",    
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0.0, 0.2),
@@ -216,6 +239,7 @@ FULL_BLOOD_COUNT = {
 
 KIDNEY_FUNCTION = {
     "sodium": {
+        "name": "Sodium",
         "type": "hilo",
         "gender_specific": False,
         "range": (135, 145),
@@ -225,6 +249,7 @@ KIDNEY_FUNCTION = {
         "advice_low": "Increase salt intake and ensure adequate hydration." 
     },
     "potassium": {
+        "name": "Potassium",
         "type": "hilo",
         "gender_specific": False,
         "range": (3.5, 5.0),
@@ -234,6 +259,7 @@ KIDNEY_FUNCTION = {
         "advice_low": "Increase intake of potassium-rich foods like bananas and oranges." 
     },
     "urea": {
+        "name": "Urea",
         "type": "hilo",
         "gender_specific": False,
         "range": (2.5, 7.8),
@@ -243,6 +269,7 @@ KIDNEY_FUNCTION = {
         "advice_low": "Ensure adequate protein intake and hydration." 
     },
     "creatinine": {
+        "name": "Creatinine",
         "type": "hilo",
         "gender_specific": True,
         "range": (53, 97, 62, 115),
@@ -255,6 +282,7 @@ KIDNEY_FUNCTION = {
 
 HEART_HEALTH = {
     "cholesterol": {
+        "name": "Cholesterol",
         "type": "hilo",
         "gender_specific": False,
         "range": (3.5, 5),
@@ -264,6 +292,7 @@ HEART_HEALTH = {
         "advice_low": "Maintain a balanced diet to ensure adequate cholesterol levels."
     },
     "triglycerides": {
+        "name": "Triglycerides",
         "type": "hilo",
         "gender_specific": False,
         "range": (0.4, 1.7),
@@ -273,6 +302,7 @@ HEART_HEALTH = {
         "advice_low": "Maintain a balanced diet to ensure adequate triglyceride levels."
     },
     "hdl_cholesterol": {
+        "name": "HDL Cholesterol",
         "type": "lower_bound",
         "gender_specific": False,
         "range": (1.0, 100),
@@ -282,6 +312,7 @@ HEART_HEALTH = {
         "advice_low": "Incorporate healthy fats into your diet and exercise regularly."
     },
     "ldl_cholesterol": {
+        "name": "LDL Cholesterol",
         "type": "hilo",
         "gender_specific": False,
         "range": (1.0, 3.0),
@@ -291,6 +322,7 @@ HEART_HEALTH = {
         "advice_low": "Maintain a balanced diet to ensure adequate LDL levels."
     },
     "tc_hdl_ratio": {
+        "name": "Total Cholesterol to HDL Ratio",
         "type": "hilo",
         "gender_specific": False,
         "range": (3, 4),
@@ -300,6 +332,7 @@ HEART_HEALTH = {
         "advice_low": "Maintain a balanced diet to ensure an adequate cholesterol ratio."   
     },
     "hdl_percentage_of_total_cholesterol": {
+        "name": "HDL Percentage of Total Cholesterol",
         "type": "hilo",
         "gender_specific": False,
         "range": (25, 35),
@@ -309,6 +342,7 @@ HEART_HEALTH = {
         "advice_low": "Incorporate healthy fats into your diet and exercise regularly."
     },
     "hs_crp": {
+        "name": "High-sensitivity C-reactive Protein (hs-CRP)",
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0.0, 3.0),
@@ -318,6 +352,7 @@ HEART_HEALTH = {
         "advice_low": "Maintain your healthy lifestyle to keep inflammation low."
     },
     "apolipoprotein_a1": {
+        "name": "Apolipoprotein A1",
         "type": "lower_bound",
         "gender_specific": False,
         "range": (1.2, 100),
@@ -327,6 +362,7 @@ HEART_HEALTH = {
         "advice_low": "Incorporate healthy fats into your diet and exercise regularly."
     },
     "apolipoprotein_b": {
+        "name": "Apolipoprotein B",
         "type": "hilo",
         "gender_specific": False,
         "range": (0.6, 1.1),
@@ -336,6 +372,7 @@ HEART_HEALTH = {
         "advice_low": "Maintain a balanced diet to ensure adequate ApoB levels."
     },
     "lipoprotein_a": {
+        "name": "Lipoprotein(a)",
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0.0, 30.0),
@@ -348,6 +385,7 @@ HEART_HEALTH = {
 
 DIABETES_MARKERS = {
     "hba1c": {
+        "name": "HbA1c",
         "type": "hilo", 
         "gender_specific": False,
         "range": (42, 47),  
@@ -357,6 +395,7 @@ DIABETES_MARKERS = {
         "advice_low": "Maintain a balanced diet to ensure adequate blood sugar levels."    
     },
     "glucose": {
+        "name": "Glucose",
         "type": "hilo",
         "gender_specific": False,
         "range": (3.9, 6.9),
@@ -369,6 +408,7 @@ DIABETES_MARKERS = {
 
 IRON_STATUS = {
     "serum_iron": {
+        "name": "Serum Iron",
         "type": "hilo",
         "gender_specific": False,
         "range": (10, 30),
@@ -378,6 +418,7 @@ IRON_STATUS = {
         "advice_low": "Increase intake of iron-rich foods and consider supplements if advised."
     },
     "transferrin": {
+        "name": "Transferrin",
         "type": "hilo",
         "gender_specific": False,
         "range": (2.0, 3.6),
@@ -387,6 +428,7 @@ IRON_STATUS = {
         "advice_low": "Increase intake of iron-rich foods and consider supplements if advised."
     },
     "ferritin": {
+        "name": "Ferritin",
         "type": "hilo",
         "gender_specific": True,
         "range": (15, 150, 30, 400),
@@ -396,6 +438,7 @@ IRON_STATUS = {
         "advice_low": "Increase intake of iron-rich foods and consider supplements if advised."
     },
     "uric_acid": {
+        "name": "Uric Acid",
         "type": "hilo",
         "gender_specific": True,
         "range": (143, 357, 202, 416),
@@ -408,6 +451,7 @@ IRON_STATUS = {
 
 BONE_PROFILE = {
     "vitamin_d": {
+        "name": "Vitamin D",
         "type": "hilo",
         "gender_specific": False,
         "range": (50, 125),
@@ -420,6 +464,7 @@ BONE_PROFILE = {
 
 MUSCLE_HEALTH = {
     "ck": {
+        "name": "Creatine Kinase (CK)",
         "type": "hilo", 
         "gender_specific": True,
         "range": (26, 192, 39, 308),
@@ -432,6 +477,7 @@ MUSCLE_HEALTH = {
 
 LIVER_FUNCTION = {
     "albumin": {
+        "name": "Albumin",
         "type": "hilo",
         "gender_specific": False,
         "range": (35, 50), 
@@ -441,6 +487,7 @@ LIVER_FUNCTION = {
         "advice_low": "Ensure adequate protein intake and consult a healthcare professional."
     },
     "total_bilirubin": {
+        "name": "Total Bilirubin",
         "type": "hilo",
         "gender_specific": False,
         "range": (5, 21),
@@ -450,6 +497,7 @@ LIVER_FUNCTION = {
         "advice_low": "No specific advice; low levels are generally not a concern."
     },
     "alkaline_phosphatase": {
+        "name": "Alkaline Phosphatase",
         "type": "hilo",
         "gender_specific": False,
         "range": (40, 130),
@@ -459,6 +507,7 @@ LIVER_FUNCTION = {
         "advice_low": "No specific advice; low levels are generally not a concern."
     },
     "alt/gpt": {
+        "name": "Alanine Aminotransferase (ALT/GPT)",
         "type": "hilo",
         "gender_specific": False,
         "range": (7, 56),
@@ -468,6 +517,7 @@ LIVER_FUNCTION = {
         "advice_low": "No specific advice; low levels are generally not a concern."
     },
     "ast/got": {
+        "name": "Aspartate Aminotransferase (AST/GOT)",
         "type": "hilo",
         "gender_specific": False,
         "range": (5, 40),
@@ -477,6 +527,7 @@ LIVER_FUNCTION = {
         "advice_low": "No specific advice; low levels are generally not a concern."
     },
     "gamma_gt": {
+        "name": "Gamma-Glutamyl Transferase (GGT)",
         "type": "hilo",
         "gender_specific": False,
         "range": (9, 48),
@@ -489,6 +540,7 @@ LIVER_FUNCTION = {
 
 URINE_ANALYSIS = {
     "ph": {
+        "name": "pH",
         "type": "hilo",
         "gender_specific": False,
         "range": (4.5, 8.0),
@@ -498,6 +550,7 @@ URINE_ANALYSIS = {
         "advice_low": "Consult a healthcare professional for further evaluation."    
     },
     "urine_protein": {
+        "name": "Urine Protein",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -507,6 +560,7 @@ URINE_ANALYSIS = {
         "advice_low": "No specific advice; absence of protein is generally not a concern."    
     },
     "urine_glucose": {
+        "name": "Urine Glucose",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -516,6 +570,7 @@ URINE_ANALYSIS = {
         "advice_low": "No specific advice; absence of glucose is generally not a concern."    
     },
     "ketones": {
+        "name": "Ketones",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -525,6 +580,7 @@ URINE_ANALYSIS = {
         "advice_low": "No specific advice; absence of ketones is generally not a concern."    
     },
     "wbcs": {
+        "name": "White Blood Cells",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -534,6 +590,7 @@ URINE_ANALYSIS = {
         "advice_low": "No specific advice; absence of WBCs is generally not a concern." 
     },
     "rbcs": {
+        "name": "Red Blood Cells",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -543,6 +600,7 @@ URINE_ANALYSIS = {
         "advice_low": "No specific advice; absence of RBCs is generally not a concern." 
     },
     "casts": {
+        "name": "Casts",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -552,6 +610,7 @@ URINE_ANALYSIS = {
         "advice_low": "No specific advice; absence of casts is generally not a concern." 
     },
     "bacterial_count": {
+        "name": "Bacterial Count",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -564,6 +623,7 @@ URINE_ANALYSIS = {
 
 THYROID_FUNCTION = {
     "free_thyroxine": {
+        "name": "Free Thyroxine (FT4)",
         "type": "hilo",
         "gender_specific": False,
         "range": (10, 22),
@@ -573,6 +633,7 @@ THYROID_FUNCTION = {
         "advice_low": "Consult a healthcare professional for further evaluation."    
     },
     "tsh": {
+        "name": "Thyroid-Stimulating Hormone (TSH)",
         "type": "hilo", 
         "gender_specific": False,
         "range": (0.4, 4.0),
@@ -582,6 +643,7 @@ THYROID_FUNCTION = {
         "advice_low": "Consult a healthcare professional for further evaluation."
     },
     "ft3": {
+        "name": "Free Triiodothyronine (FT3)",
         "type": "hilo",
         "gender_specific": False,
         "range": (3.5, 6.5),
@@ -594,6 +656,7 @@ THYROID_FUNCTION = {
 
 CANCER_MARKERS = {
     "ca_125": {
+        "name": "CA 125",
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0, 35),
@@ -603,6 +666,7 @@ CANCER_MARKERS = {
         "advice_low": "No specific advice; normal levels are generally not a concern." 
     },
     "psa": {
+        "name": "Prostate-Specific Antigen (PSA)",
         "type": "upper_bound",
         "gender_specific": False,
         "range": (0, 4),
@@ -615,6 +679,7 @@ CANCER_MARKERS = {
 
 VITAMINS = {
     "ab12": {
+        "name": "Vitamin B12 (cobalamin)",
         "type": "hilo",
         "gender_specific": False,
         "range": (130, 700),
@@ -624,6 +689,7 @@ VITAMINS = {
         "advice_low": "Consult a healthcare professional for further evaluation."
     },
     "folate": {
+        "name": "Folate (vitamin B9)",
         "type": "lower_bound",
         "gender_specific": False,
         "range": (7, 100),

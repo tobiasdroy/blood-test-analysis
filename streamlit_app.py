@@ -25,7 +25,7 @@ for metric, meta in BLOOD_METRIC_DATA.items():
 
     with col1:
         value = st.number_input(
-            label=metric,
+            label=meta['name'],
             min_value=0.0,
             step=0.01,
             format="%.2f",
