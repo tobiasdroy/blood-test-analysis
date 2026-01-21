@@ -714,27 +714,32 @@ BLOOD_METRIC_DATA.update(THYROID_FUNCTION)
 BLOOD_METRIC_DATA.update(CANCER_MARKERS)
 BLOOD_METRIC_DATA.update(VITAMINS)
 
-def interpret_result(metric_name, value, unit):
+def interpret_result(metric, data, gender):
     """
     Interprets a single blood test result based on the defined data.
     Returns a tuple: (status, explanation, advice)
     """
     
-    # 1. Standardize the metric name for lookup
-    metric_name = metric_name.lower().replace(' ', '_')
-    
     # 2. Check if the metric is known
-    if metric_name not in BLOOD_METRIC_DATA:
+    if metric not in BLOOD_METRIC_DATA:
         return ("Unknown", "This metric is not yet in our database.", "Consult your doctor for interpretation.")
 
-    data = BLOOD_METRIC_DATA[metric_name]
-    low_end, high_end = data["range"]
+
+    if data["gender_specific"]:
+        if gender == "Female":
+            low_end, high_end = data["range"][0:2]
+        elif gender == "Male":
+            low_end, high_end = data["range"][2:4]
+        else:
+            return ("Unknown", "Gender not specified correctly for this metric.", "Consult your doctor for interpretation.")
+    else:
+        low_end, high_end = data["range"]
     
     # 3. Simple interpretation logic
-    if value < low_end:
+    if data["value"] < low_end:
         status = "Low"
         advice = data.get("advice_low", "See a healthcare professional for specific advice.")
-    elif value > high_end:
+    elif data["value"] > high_end:
         status = "High"
         advice = data.get("advice_high", "See a healthcare professional for specific advice.")
     else:
