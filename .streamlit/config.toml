@@ -1,0 +1,27 @@
+[server]
+enableStaticServing = true
+
+[[theme.fontFaces]]
+family="poppins"
+url="app/static/Poppins-Regular.ttf"
+style="regular"
+[[theme.fontFaces]]
+family="poppins"
+url="app/static/Poppins-Medium.ttf"
+style="medium"
+[[theme.fontFaces]]
+family="poppins"
+url="app/static/Poppins-Bold.ttf"
+style="bold"
+[[theme.fontFaces]]
+family="figtree"
+url="app/static/Figtree-VariableFont_wght.ttf"
+style="normal"
+[[theme.fontFaces]]
+family="figtree"
+url="app/static/Figtree-Italic-VariableFont_wght.ttf"
+style="italic"
+
+[theme]
+font="figtree"
+headingFont="poppins"
