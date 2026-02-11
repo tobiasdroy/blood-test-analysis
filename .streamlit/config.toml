@@ -25,3 +25,9 @@ style="italic"
 [theme]
 font="figtree"
 headingFont="poppins"
+
+base="light"
+backgroundColor="white"
+primaryColor="#FF671D"
+textColor="#54565A"
+linkColor="#FF671D"
