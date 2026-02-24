@@ -4,6 +4,7 @@ import streamlit as st
 from interpreter import interpret_result, BLOOD_METRIC_DATA, FULL_BLOOD_COUNT, KIDNEY_FUNCTION, HEART_HEALTH, DIABETES_MARKERS, IRON_STATUS, BONE_PROFILE, MUSCLE_HEALTH, LIVER_FUNCTION, URINE_ANALYSIS, THYROID_FUNCTION, CANCER_MARKERS, VITAMINS
 import pandas as pd
 from PIL import Image
+import plotly.graph_objects as go
 
 
 st.set_page_config(
@@ -36,6 +37,127 @@ abnormal_box_style = """
 
 st.markdown(warning_box_style, unsafe_allow_html=True)
 st.markdown(abnormal_box_style, unsafe_allow_html=True)
+st.markdown("""
+<style>
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 5px;
+        color: #155724;
+        font-weight: regular;
+    }
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        background-color: #FFFFFF;
+        color: #54565A;
+        text-align: left;
+        border-radius: 6px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: 105%;
+        margin-left: 0px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 14px;
+        font-weight: normal;
+        max-width: 70vw;
+        width: max-content;
+        min-width: 300px;
+    }
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+def draw_spectrum(data, gender):
+    value = data['value']
+    data_range = data['range']
+    unit = data['unit']
+    metric_name = data['name']
+    gender_specific = data['gender_specific']
+    metric_type = data.get('type', 'hilo')
+
+    # 1. Determine the reference limits based on gender
+    if gender_specific:
+        if gender == "Female":
+            low, high = data_range[0:2]
+        else: # Male
+            low, high = data_range[2:4]
+    else:
+        low, high = data_range
+
+    # 2. Calculate dynamic chart bounds (padding)
+    # We want to make sure the "Normal" green zone is always visible
+    span = high - low if high > low else low
+    if span == 0: span = value # Fallback for 'presence' types
+    
+    chart_min = min(value, low) - (span * 0.2)
+    chart_max = max(value, high) + (span * 0.2)
+    
+    # Adjust bounds for specific types
+    if metric_type in ['upper_bound', 'presence']:
+        chart_min = 0
+    
+    fig = go.Figure()
+
+    # 3. Create the background "Spectrum" using shapes
+    # This prevents the 'staircase' effect caused by go.Bar
+    shapes = []
+    
+    # Normal Zone (Green) - Defined first so it's the baseline
+    shapes.append(dict(
+        type="rect", x0=low, x1=high, y0=0, y1=1,
+        fillcolor="#D4EDDA", line_width=0, layer="below"
+    ))
+
+    # Low Zone (Red) - Only if it's a hilo type
+    if chart_min < low:
+        shapes.append(dict(
+            type="rect", x0=chart_min, x1=low, y0=0, y1=1,
+            fillcolor="#F8D7DA", line_width=0, layer="below"
+        ))
+
+    # High Zone (Red)
+    if chart_max > high:
+        shapes.append(dict(
+            type="rect", x0=high, x1=chart_max, y0=0, y1=1,
+            fillcolor="#F8D7DA", line_width=0, layer="below"
+        ))
+
+    # 4. Add the user's result marker (Diamond)
+    fig.add_trace(go.Scatter(
+        x=[value], y=[0.5], # 0.5 centers it vertically in the box
+        mode='markers+text',
+        marker=dict(color='black', size=15, symbol='diamond', line=dict(width=2, color="white")),
+        text=[f"<b>{value}</b>"],
+        textposition="top center",
+        name="Your Result",
+        hovertemplate=f"Result: {value} {unit}<extra></extra>"
+    ))
+
+    # 5. Clean up the Layout
+    fig.update_layout(
+        shapes=shapes,
+        height=130,
+        margin=dict(l=20, r=20, t=40, b=40),
+        xaxis=dict(
+            showgrid=False, 
+            zeroline=False, 
+            range=[chart_min, chart_max],
+            tickvals=[low, high],
+            ticktext=[f"Low: {low}", f"High: {high}"],
+            fixedrange=True
+        ),
+        yaxis=dict(showticklabels=False, showgrid=False, zeroline=False, range=[0, 1], fixedrange=True),
+        plot_bgcolor='white'
+    )
+
+    return fig
 
 def input_blood_metrics(DATA, upload, results):
     for metric, meta in DATA.items():
@@ -54,6 +176,8 @@ def input_blood_metrics(DATA, upload, results):
                     text-align: left;
                 '>
                     {meta['name']}
+                    <div class="tooltip">ⓘ
+                        <span class="tooltiptext">{meta['explanation']}</span>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -182,23 +306,22 @@ if st.button("Interpret Results"):
                 normal_results[metric] = (data, status, explanation, advice)
             else:       
                 abnormal_results[metric] = (data, status, explanation, advice)
-
+            with st.container():
+                st.markdown(f"<div class='abnormal-box'><h6>{status} {data['name']}</h6><p>{explanation}</p></div>", unsafe_allow_html=True)
+        
+                # Display the chart
+                fig = draw_spectrum(data, sex)
+                st.plotly_chart(fig, use_container_width=True)
+                
+                st.write(f"**Advice:** {advice}")
     st.subheader("Abnormal Results")
     for metric, (data, status, explanation, advice) in abnormal_results.items():
-        '''
-        st.subheader(data['name'])
-        st.write(f"**Result:** {data['value']} {data['unit']}")
-        st.write(status)
-        st.write(explanation)
-        st.write(advice)
-        '''
         st.markdown(
             f"""
             <div class='abnormal-box'>
-                <h3>{data['name']}</h3>
+                <h6>{status} {data['name']}</h6>
+                <p>{explanation}</p>
                 <p><strong>Result:</strong> {data['value']} {data['unit']}</p>
-                <p><strong>Status:</strong> {status}</p>
-                <p><strong>Explanation:</strong> {explanation}</p>
                 <p><strong>Advice:</strong> {advice}</p>
             </div>
             """,
@@ -206,7 +329,12 @@ if st.button("Interpret Results"):
         )
     st.subheader("Normal Results")
     for metric, (data, status, explanation, advice) in normal_results.items():
-        st.subheader(data['name'])
-        st.write(f"**Result:** {data['value']} {data['unit']}")
-        st.write(status)
-        st.write(explanation)
+        st.markdown(f"""
+        <h6 style="margin: 0;">
+            {data['name']}
+            <div class="tooltip">ⓘ
+                <span class="tooltiptext">{explanation}</span>
+            </div>
+        </h6>
+        <p><strong>Result:</strong> {data['value']} {data['unit']}</p>
+""", unsafe_allow_html=True)
