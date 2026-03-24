@@ -10,7 +10,7 @@ CONSULTATION_RESULTS = {
         "gender_specific": False,
         "range": (90, 140, 60, 90),  # Normal systolic range in mmHg
         "unit": "mmHg",
-        "explanation": "Blood pressure indicates the force of blood against your artery walls. High blood pressure can lead to heart disease.",
+        "explanation": "Measures the force of blood pushing against your artery walls. The first (higher) number is the pressure when your heart pumps; the lower number is the pressure when it rests between beats.",
         "advice_high": "Reduce salt intake, exercise regularly, and manage stress.",
         "advice_low": "Ensure adequate hydration and consider increasing salt intake if advised by a healthcare professional."
     },
@@ -20,7 +20,7 @@ CONSULTATION_RESULTS = {
         "gender_specific": False,
         "range": (60, 100),  # Normal resting heart rate in bpm
         "unit": "bpm",
-        "explanation": "Pulse rate indicates your heartbeats per minute. A very high or low pulse rate can indicate underlying health issues.",
+        "explanation": "How many times your heart beats per minute. A consistently very high or low pulse rate can indicate an underlying health issue.",
         "advice_high": "Incorporate regular cardiovascular exercise and practice relaxation techniques.",
         "advice_low": "Consult a healthcare professional to rule out any underlying conditions."
     },
@@ -30,7 +30,7 @@ CONSULTATION_RESULTS = {
         "gender_specific": False,
         "range": (18.5, 24.9),  # Normal BMI range
         "unit": "kg/m²",
-        "explanation": "Body Mass Index (BMI) is a measure of body fat based on height and weight.",
+        "explanation": "Compares your weight to your height as an indicator of whether you are underweight, a healthy weight, overweight, or obese.",
         "advice_high": "Adopt a balanced diet and increase physical activity.",
         "advice_low": "Increase calorie intake with nutritious foods and consider strength training exercises."
     },
@@ -40,7 +40,7 @@ CONSULTATION_RESULTS = {
         "gender_specific": False,
         "range": (30, 100),  # Example range in %
         "unit": "%",
-        "explanation": "Muscle mass percentage indicates the proportion of your body weight that is muscle.",
+        "explanation": "How much of your body weight comes from muscle. Higher muscle mass is generally associated with better metabolic health and physical function.",
         "advice_high": "Maintain your current exercise routine and balanced diet.",
         "advice_low": "Incorporate strength training and ensure adequate protein intake."
     },
@@ -49,7 +49,7 @@ CONSULTATION_RESULTS = {
         "type": "lower_bound",
         "range": (300, 700),  # Example range in L/min
         "unit": "L/min",
-        "explanation": "Peak flow measures how well air moves out of your lungs. It is important for monitoring respiratory conditions.",
+        "explanation": "How fast you can blow air out of your lungs. Used to check breathing capacity and monitor respiratory conditions such as asthma.",
         "advice_high": "Maintain good respiratory health through regular exercise and avoiding pollutants.",
         "advice_low": "Consult a healthcare professional for assessment and possible treatment."
     },
@@ -59,7 +59,7 @@ CONSULTATION_RESULTS = {
         "gender_specific": True,
         "range": (10, 32, 10, 25),  # Example range in %
         "unit": "%",
-        "explanation": "Body fat percentage indicates the proportion of your body weight that is fat.",
+        "explanation": "How much of your body weight is made up of fat. Both too little and too much body fat can affect your health.",
         "advice_high": "Incorporate regular exercise and a balanced diet to reduce body fat.",
         "advice_low": "Ensure adequate calorie intake and consider strength training exercises."
     },
@@ -68,7 +68,7 @@ CONSULTATION_RESULTS = {
         "type": "lower_bound",
         "range": (92, 100),  # Normal SpO2 range in %
         "unit": "%",
-        "explanation": "Blood oxygen saturation indicates how much oxygen your blood is carrying. Low levels can indicate respiratory issues.",
+        "explanation": "How much oxygen your blood is carrying, expressed as a percentage. Low levels can indicate a respiratory or circulatory problem.",
         "advice_high": "Maintain good respiratory health through regular exercise and avoiding pollutants.",
         "advice_low": "Consult a healthcare professional for assessment and possible treatment."
     },
@@ -78,7 +78,7 @@ CONSULTATION_RESULTS = {
         "gender_specific": False,
         "range": (0, 20),  # Example range in %
         "unit": "%",
-        "explanation": "QRISK score estimates your risk of developing cardiovascular disease over the next 10 years.",
+        "explanation": "Estimates your chance of having a heart attack or stroke in the next 10 years, calculated from a combination of health and lifestyle factors.",
         "advice_high": "Adopt a heart-healthy lifestyle, including diet, exercise, and smoking cessation.",
         "advice_low": "Maintain your healthy lifestyle to keep your risk low."
     }
@@ -661,7 +661,7 @@ CANCER_MARKERS = {
         "gender_specific": False,
         "range": (0, 35),
         "unit": "U/mL",
-        "explanation": "CA 125 is a tumor marker often used to monitor ovarian cancer. Elevated levels may indicate cancer or other conditions. Note that CA_125 is not a reliable marker for those without ovaries.",    
+        "explanation": "A protein linked to ovarian cancer risk. Elevated levels may indicate ovarian cancer or other conditions. Note that this marker is not applicable to those without ovaries.",    
         "advice_high": "Consult a healthcare professional for further evaluation.", 
         "advice_low": "No specific advice; normal levels are generally not a concern." 
     },
@@ -671,7 +671,7 @@ CANCER_MARKERS = {
         "gender_specific": False,
         "range": (0, 4),
         "unit": "ng/mL",
-        "explanation": "Prostate-specific antigen (PSA) is a tumor marker used to screen for prostate cancer. Elevated levels may indicate cancer or other prostate conditions. Note that PSA is not a reliable marker for those without a prostate.",    
+        "explanation": "A protein produced by the prostate gland. Elevated levels can indicate prostate problems including cancer. Note that this marker is not applicable to those without a prostate.",    
         "advice_high": "Consult a healthcare professional for further evaluation.", 
         "advice_low": "No specific advice; low levels are generally not a concern."
     }
@@ -684,7 +684,7 @@ VITAMINS = {
         "gender_specific": False,
         "range": (130, 700),
         "unit": "pmol/L",
-        "explanation": "Vitamin B12 is essential for neurological function and the production of DNA and red blood cells. Deficiency can lead to anemia and neurological problems.",    
+        "explanation": "Essential for nerve health and blood cell production. Low levels can cause anaemia and neurological problems; very high levels may warrant further investigation.",    
         "advice_high": "Consult a healthcare professional for further evaluation.", 
         "advice_low": "Consult a healthcare professional for further evaluation."
     },
@@ -694,7 +694,7 @@ VITAMINS = {
         "gender_specific": False,
         "range": (7, 100),
         "unit": "nmol/L",
-        "explanation": "Folate (vitamin B9) is essential for DNA synthesis and cell division. Deficiency can lead to anemia and birth defects during pregnancy.",    
+        "explanation": "Essential for nerve health, blood cell production, and DNA synthesis. Low levels can cause anaemia and are particularly important to address during pregnancy.",    
         "advice_high": "No specific advice; high levels are generally not a concern.", 
         "advice_low": "Consult a healthcare professional for further evaluation."
     }
