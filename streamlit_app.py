@@ -6,6 +6,9 @@ import pandas as pd
 from PIL import Image
 import plotly.graph_objects as go
 import plotly.io as pio
+import pdfplumber
+import io
+import re
 
 
 st.set_page_config(
@@ -206,8 +209,7 @@ st.markdown("""
     /* ── Disclaimer ── */
     .disclaimer-box {
         background: linear-gradient(135deg, rgba(255, 103, 29, 0.08) 0%, rgba(255, 103, 29, 0.04) 100%);
-        border: 1px solid var(--orange-border);
-        border-left: 3px solid var(--orange);
+        border: 1.5px solid var(--orange);
         border-radius: var(--radius-md);
         padding: 15px 20px;
         margin-bottom: 24px;
@@ -362,13 +364,11 @@ st.markdown("""
     }
     .result-card-abnormal {
         background: #FFF5F6;
-        border: 1px solid var(--red-border);
-        border-left: 3px solid var(--red);
+        border: 1.5px solid var(--red);
     }
     .result-card-normal {
         background: #F4FBF6;
-        border: 1px solid var(--green-border);
-        border-left: 3px solid var(--green);
+        border: 1.5px solid var(--green);
     }
     .result-badge {
         display: inline-block;
@@ -412,6 +412,173 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+
+# Maps common PDF metric name spellings (lowercase) → app metric keys.
+# Sorted longest-first so "hdl cholesterol" matches before "cholesterol".
+_PDF_NAME_TO_KEY = {
+    # Full blood count
+    "haemoglobin":                      "haemoglobin",
+    "hemoglobin":                       "haemoglobin",
+    "red blood count":                  "red_blood_cell_count",
+    "red blood cell count":             "red_blood_cell_count",
+    "haematocrit (hct)":                "hct",
+    "hct":                              "hct",
+    "mean corpuscular volume":          "mcv",
+    "mcv":                              "mcv",
+    "mean corpuscular haemoglobin concentration (mchc)": "mchc",
+    "mean corpuscular haemoglobin":     "mch",
+    "mchc":                             "mchc",
+    "mch":                              "mch",
+    "red cell distribution width":      "rdw",
+    "rdw":                              "rdw",
+    "platelet count":                   "platelets",
+    "platelets":                        "platelets",
+    "mean platelet volume (mpv)":       "mpv",
+    "mpv":                              "mpv",
+    "white blood cell count":           "white_blood_cell_count",
+    "white cell count":                 "white_blood_cell_count",
+    "neutrophils":                      "neutrophils",
+    "lymphocytes":                      "lymphocytes",
+    "monocytes":                        "monocytes",
+    "eosinophils":                      "eosinophils",
+    "basophils":                        "basophils",
+    # Kidney function
+    "sodium":                           "sodium",
+    "potassium":                        "potassium",
+    "urea":                             "urea",
+    "creatinine":                       "creatinine",
+    # Heart health
+    "hdl % of total":                   "hdl_percentage_of_total_cholesterol",
+    "hdl cholesterol":                  "hdl_cholesterol",
+    "ldl cholesterol":                  "ldl_cholesterol",
+    "tc/hdl ratio":                     "tc_hdl_ratio",
+    "total cholesterol/hdl ratio":      "tc_hdl_ratio",
+    "cholesterol":                      "cholesterol",
+    "triglycerides":                    "triglycerides",
+    "triglyceride":                     "triglycerides",
+    "high-sensitivity c-reactive protein": "hs_crp",
+    "hs- crp":                          "hs_crp",
+    "hs-crp":                           "hs_crp",
+    "apolipoprotein a1":                "apolipoprotein_a1",
+    "apolipoprotein b":                 "apolipoprotein_b",
+    "lipoprotein (a)":                  "lipoprotein_a",
+    # Diabetes
+    "hba1c":                            "hba1c",
+    # Iron status
+    "serum iron":                       "serum_iron",
+    "transferrin":                      "transferrin",
+    "ferritin":                         "ferritin",
+    "uric acid":                        "uric_acid",
+    # Bone profile
+    "vitamin d 25(oh)":                 "vitamin_d",
+    "vitamin d":                        "vitamin_d",
+    # Muscle health
+    "creatine kinase":                  "ck",
+    # Liver function
+    "alkaline phosphatase":             "alkaline_phosphatase",
+    "total bilirubin":                  "total_bilirubin",
+    "albumin":                          "albumin",
+    "alt/gpt":                          "alt/gpt",
+    "ast/got":                          "ast/got",
+    "gamma gt":                         "gamma_gt",
+    # Urine analysis
+    "urine protein":                    "urine_protein",
+    "urine glucose":                    "urine_glucose",
+    "ketones":                          "ketones",
+    "wbc's":                            "wbcs",
+    "wbcs":                             "wbcs",
+    "rbc's":                            "rbcs",
+    "rbcs":                             "rbcs",
+    "casts":                            "casts",
+    "ph":                               "ph",
+    # Thyroid function
+    "thyroid stimulating hormone":      "tsh",
+    "free thyroxine":                   "free_thyroxine",
+    "free t3":                          "ft3",
+    # Cancer markers
+    "ca125":                            "ca_125",
+    "ca 125":                           "ca_125",
+    # Vitamins
+    "serum folate (vitamin b9)":        "folate",
+    "active b12":                       "ab12",
+}
+
+_SORTED_PDF_NAMES = sorted(_PDF_NAME_TO_KEY, key=len, reverse=True)
+_PRESENCE_KEYS = {"urine_protein", "urine_glucose", "ketones", "wbcs", "rbcs", "casts", "bacterial_count"}
+_VALUE_RE = re.compile(
+    r'^([<>≤≥]?\s*\d+\.?\d*|negative|positive|not detected|detected)',
+    re.IGNORECASE,
+)
+
+
+def _parse_numeric(s):
+    s = s.strip().lower()
+    if s in ("negative", "not detected", "absent"):
+        return 0.0
+    if s in ("positive", "detected", "present"):
+        return 1.0
+    s = re.sub(r'^[<>≤≥]=?\s*', '', s)
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+def parse_lab_pdf(pdf_bytes):
+    """Extract blood test values from a lab PDF using pdfplumber."""
+    results = {}
+    hba1c_seen = 0
+
+    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+        lines = []
+        for page in pdf.pages:
+            text = page.extract_text() or ""
+            lines.extend(text.splitlines())
+
+    for line in lines:
+        line_clean = line.strip()
+        if not line_clean:
+            continue
+        line_lower = line_clean.lower()
+
+        for pdf_name in _SORTED_PDF_NAMES:
+            if not line_lower.startswith(pdf_name):
+                continue
+
+            metric_key = _PDF_NAME_TO_KEY[pdf_name]
+
+            # HbA1c appears twice (% then mmol/mol); our metric is mmol/mol so skip first.
+            if metric_key == "hba1c":
+                hba1c_seen += 1
+                if hba1c_seen == 1:
+                    break
+
+            if metric_key in results:
+                break
+
+            remainder = line_clean[len(pdf_name):].strip()
+            m = _VALUE_RE.match(remainder)
+            if not m:
+                break
+
+            value = _parse_numeric(m.group(1))
+            if value is None:
+                break
+
+            if metric_key in _PRESENCE_KEYS:
+                # "< 1" or 0 both mean not detected for presence metrics
+                raw = m.group(1).strip()
+                value = 0.0 if (value == 0.0 or raw.startswith('<')) else 1.0
+
+            # HCT: PDFs often report as a ratio (0.40 l/l); convert to %
+            if metric_key == "hct" and value <= 1.0:
+                value *= 100
+
+            results[metric_key] = value
+            break
+
+    return results
 
 
 def draw_spectrum(data, gender, bg_color='#FFFFFF'):
@@ -691,16 +858,29 @@ upload = False
 st.header("Enter your blood test results")
 st.write("Input values only for the metrics you have tested, ensuring units match those shown.")
 
-uploaded_file = st.file_uploader("Or upload a CSV file with your blood test results", type=["csv"])
+uploaded_file = st.file_uploader("Or upload your lab report (PDF or CSV)", type=["pdf", "csv"])
 if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-    upload = True
-    for _, row in df.iterrows():
-        metric = row['Metric']
-        value = row['Result']
-        if metric in BLOOD_METRIC_DATA:
-            meta = BLOOD_METRIC_DATA[metric]
-            results[metric] = {**meta, "value": value}
+    if uploaded_file.name.lower().endswith(".pdf"):
+        with st.spinner("Reading your lab report..."):
+            try:
+                parsed = parse_lab_pdf(uploaded_file.read())
+                upload = True
+                for metric_key, value in parsed.items():
+                    if metric_key in BLOOD_METRIC_DATA:
+                        meta = BLOOD_METRIC_DATA[metric_key]
+                        results[metric_key] = {**meta, "value": float(value)}
+                st.success(f"Extracted {len(results)} metric(s) from your report.")
+            except Exception as e:
+                st.error(f"Could not parse PDF: {e}")
+    else:
+        df = pd.read_csv(uploaded_file)
+        upload = True
+        for _, row in df.iterrows():
+            metric = row['Metric']
+            value = row['Result']
+            if metric in BLOOD_METRIC_DATA:
+                meta = BLOOD_METRIC_DATA[metric]
+                results[metric] = {**meta, "value": value}
 
 with st.expander("Full Blood Count", expanded=True):
     input_blood_metrics(FULL_BLOOD_COUNT, upload, results)
