@@ -333,9 +333,9 @@ HEART_HEALTH = {
     },
     "hdl_percentage_of_total_cholesterol": {
         "name": "HDL Percentage of Total Cholesterol",
-        "type": "hilo",
+        "type": "lower_bound",
         "gender_specific": False,
-        "range": (20, 50),
+        "range": (20, 100),
         "unit": "%",
         "explanation": "The percentage of HDL cholesterol in total cholesterol is used to assess heart disease risk. Higher percentages are better for heart health.",
         "advice_high": "Maintain your healthy lifestyle to keep your HDL percentage high.",

@@ -95,7 +95,7 @@ st.markdown("""
         border: 1px solid var(--border-subtle) !important;
         border-radius: var(--radius-md) !important;
         margin-bottom: 6px !important;
-        overflow: hidden !important;
+        overflow: visible !important;
     }
     [data-testid="stExpander"] details summary {
         font-family: 'poppins', sans-serif !important;
@@ -105,6 +105,7 @@ st.markdown("""
         padding: 13px 18px !important;
         background: transparent !important;
         list-style: none !important;
+        border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
     }
     [data-testid="stExpander"] details summary:hover {
         background: var(--bg-elevated) !important;
@@ -244,8 +245,9 @@ st.markdown("""
         border: 1px solid var(--border-medium);
         box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
         position: absolute;
-        z-index: 200;
-        top: calc(100% + 8px);
+        z-index: 9999;
+        bottom: calc(100% + 8px);
+        top: auto;
         left: 0;
         transform: none;
         opacity: 0;
@@ -830,7 +832,7 @@ def input_blood_metrics(DATA, upload, results):
 
 
 image = Image.open('assets/logo.png')
-st.image(image, use_container_width=True)
+st.image(image, width='stretch')
 st.title("Blood Test Interpreter")
 
 st.markdown(
