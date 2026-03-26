@@ -13,7 +13,7 @@ import re
 
 st.set_page_config(
     page_title="Blood Test Interpreter",
-    layout="centered"
+    layout="wide"
 )
 
 # ===== DESIGN SYSTEM =====
@@ -52,7 +52,9 @@ st.markdown("""
     }
     .block-container {
         padding-top: 2rem !important;
-        max-width: 780px !important;
+        max-width: 1400px !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
     }
 
     /* ── Typography ── */
@@ -411,6 +413,39 @@ st.markdown("""
     .result-body strong {
         color: var(--text-primary);
         font-weight: 600;
+    }
+
+    /* ── Results placeholder ── */
+    .results-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 320px;
+        border: 2px dashed var(--border-medium);
+        border-radius: var(--radius-md);
+        padding: 48px 32px;
+        text-align: center;
+        color: var(--text-muted);
+        font-family: 'figtree', sans-serif;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    .results-placeholder-icon {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+        opacity: 0.35;
+    }
+
+    /* ── Responsive: stack all columns on mobile ── */
+    @media (max-width: 768px) {
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap !important;
+        }
+        [data-testid="stColumn"] {
+            min-width: 100% !important;
+            width: 100% !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -831,10 +866,17 @@ def input_blood_metrics(DATA, upload, results):
             results[metric] = {**meta, "value": value}
 
 
-image = Image.open('assets/logo.png')
-st.image(image, width='stretch')
-st.title("Blood Test Interpreter")
+# ── Session state ──
+if "last_interp" not in st.session_state:
+    st.session_state.last_interp = None
 
+# ── Full-width header ──
+logo_col, _ = st.columns([1, 3])
+with logo_col:
+    image = Image.open('assets/logo.png')
+    st.image(image, width='stretch')
+
+st.title("Blood Test Interpreter")
 st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is NOT a substitute "
@@ -857,62 +899,95 @@ if not sex:
 results = {}
 upload = False
 
-st.header("Enter your blood test results")
-st.write("Input values only for the metrics you have tested, ensuring units match those shown.")
+# ── Two-column layout ──
+col_input, col_results = st.columns([1, 1], gap="large")
 
-uploaded_file = st.file_uploader("Or upload your lab report (PDF or CSV)", type=["pdf", "csv"])
-if uploaded_file is not None:
-    if uploaded_file.name.lower().endswith(".pdf"):
-        with st.spinner("Reading your lab report..."):
-            try:
-                parsed = parse_lab_pdf(uploaded_file.read())
-                upload = True
-                for metric_key, value in parsed.items():
-                    if metric_key in BLOOD_METRIC_DATA:
-                        meta = BLOOD_METRIC_DATA[metric_key]
-                        results[metric_key] = {**meta, "value": float(value)}
-                st.success(f"Extracted {len(results)} metric(s) from your report.")
-            except Exception as e:
-                st.error(f"Could not parse PDF: {e}")
-    else:
-        df = pd.read_csv(uploaded_file)
-        upload = True
-        for _, row in df.iterrows():
-            metric = row['Metric']
-            value = row['Result']
-            if metric in BLOOD_METRIC_DATA:
-                meta = BLOOD_METRIC_DATA[metric]
-                results[metric] = {**meta, "value": value}
+with col_input:
+    st.header("Enter your blood test results")
+    st.write("Input values only for the metrics you have tested, ensuring units match those shown.")
 
-with st.expander("Full Blood Count", expanded=True):
-    input_blood_metrics(FULL_BLOOD_COUNT, upload, results)
-with st.expander("Kidney Function"):
-    input_blood_metrics(KIDNEY_FUNCTION, upload, results)
-with st.expander("Heart Health"):
-    input_blood_metrics(HEART_HEALTH, upload, results)
-with st.expander("Diabetes Markers"):
-    input_blood_metrics(DIABETES_MARKERS, upload, results)
-with st.expander("Iron Status"):
-    input_blood_metrics(IRON_STATUS, upload, results)
-with st.expander("Bone Profile"):
-    input_blood_metrics(BONE_PROFILE, upload, results)
-with st.expander("Muscle Health"):
-    input_blood_metrics(MUSCLE_HEALTH, upload, results)
-with st.expander("Liver Function"):
-    input_blood_metrics(LIVER_FUNCTION, upload, results)
-with st.expander("Urine Analysis"):
-    input_blood_metrics(URINE_ANALYSIS, upload, results)
-with st.expander("Thyroid Function"):
-    input_blood_metrics(THYROID_FUNCTION, upload, results)
-with st.expander("Cancer Markers"):
-    input_blood_metrics(CANCER_MARKERS, upload, results)
-with st.expander("Vitamins"):
-    input_blood_metrics(VITAMINS, upload, results)
+    uploaded_file = st.file_uploader(
+        "If you have had a blood test with Vital Flow Health, upload your lab report to autofill the form.",
+        type=["pdf", "csv"]
+    )
+    if uploaded_file is not None:
+        if uploaded_file.name.lower().endswith(".pdf"):
+            with st.spinner("Reading your lab report..."):
+                try:
+                    parsed = parse_lab_pdf(uploaded_file.read())
+                    upload = True
+                    for metric_key, value in parsed.items():
+                        if metric_key in BLOOD_METRIC_DATA:
+                            meta = BLOOD_METRIC_DATA[metric_key]
+                            results[metric_key] = {**meta, "value": float(value)}
+                    st.success(f"Extracted {len(results)} metric(s) from your report.")
+                except Exception as e:
+                    st.error(f"Could not parse PDF: {e}")
+        else:
+            df = pd.read_csv(uploaded_file)
+            upload = True
+            for _, row in df.iterrows():
+                metric = row['Metric']
+                value = row['Result']
+                if metric in BLOOD_METRIC_DATA:
+                    meta = BLOOD_METRIC_DATA[metric]
+                    results[metric] = {**meta, "value": value}
 
-if st.button("Interpret Results"):
-    normal_results = {}
-    abnormal_results = {}
-    if not results:
+    with st.expander("Full Blood Count", expanded=True):
+        input_blood_metrics(FULL_BLOOD_COUNT, upload, results)
+    with st.expander("Kidney Function"):
+        input_blood_metrics(KIDNEY_FUNCTION, upload, results)
+    with st.expander("Heart Health"):
+        input_blood_metrics(HEART_HEALTH, upload, results)
+    with st.expander("Diabetes Markers"):
+        input_blood_metrics(DIABETES_MARKERS, upload, results)
+    with st.expander("Iron Status"):
+        input_blood_metrics(IRON_STATUS, upload, results)
+    with st.expander("Bone Profile"):
+        input_blood_metrics(BONE_PROFILE, upload, results)
+    with st.expander("Muscle Health"):
+        input_blood_metrics(MUSCLE_HEALTH, upload, results)
+    with st.expander("Liver Function"):
+        input_blood_metrics(LIVER_FUNCTION, upload, results)
+    with st.expander("Urine Analysis"):
+        input_blood_metrics(URINE_ANALYSIS, upload, results)
+    with st.expander("Thyroid Function"):
+        input_blood_metrics(THYROID_FUNCTION, upload, results)
+    with st.expander("Cancer Markers"):
+        input_blood_metrics(CANCER_MARKERS, upload, results)
+    with st.expander("Vitamins"):
+        input_blood_metrics(VITAMINS, upload, results)
+
+    if st.button("Interpret Results"):
+        if not results:
+            st.session_state.last_interp = {"error": True}
+        else:
+            normal_results = {}
+            abnormal_results = {}
+            for metric, data in results.items():
+                status, explanation, advice = interpret_result(metric, data, sex)
+                if status == "Normal":
+                    normal_results[metric] = (data, status, explanation, advice)
+                else:
+                    abnormal_results[metric] = (data, status, explanation, advice)
+            st.session_state.last_interp = {
+                "normal": normal_results,
+                "abnormal": abnormal_results,
+                "sex": sex,
+            }
+
+with col_results:
+    interp = st.session_state.last_interp
+
+    if interp is None:
+        st.markdown(
+            "<div class='results-placeholder'>"
+            "<div class='results-placeholder-icon'>&#128203;</div>"
+            "Enter your blood test values on the left,<br>then click <strong>Interpret Results</strong>."
+            "</div>",
+            unsafe_allow_html=True
+        )
+    elif interp.get("error"):
         st.markdown(
             "<div class='disclaimer-box' role='alert'>"
             "<strong>No results entered.</strong> Please enter at least one blood test value before interpreting."
@@ -920,20 +995,14 @@ if st.button("Interpret Results"):
             unsafe_allow_html=True
         )
     else:
-        for metric, data in results.items():
-            status, explanation, advice = interpret_result(metric, data, sex)
-            if status == "Normal":
-                normal_results[metric] = (data, status, explanation, advice)
-            else:
-                abnormal_results[metric] = (data, status, explanation, advice)
-
+        interp_sex = interp["sex"]
+        normal_results = interp["normal"]
+        abnormal_results = interp["abnormal"]
         n_abnormal = len(abnormal_results)
         n_normal = len(normal_results)
 
-        st.divider()
         st.header("Interpretation")
 
-        # Summary strip
         st.markdown(f"""
             <div class="summary-strip">
                 <div class="summary-chip summary-chip-abnormal">
@@ -956,7 +1025,7 @@ if st.button("Interpret Results"):
         st.subheader("Abnormal Results")
         if abnormal_results:
             for metric, (data, status, explanation, advice) in abnormal_results.items():
-                fig = draw_presence_chart(data, bg_color='#FFF5F6') if data.get('type') == 'presence' else draw_spectrum(data, sex, bg_color='#FFF5F6')
+                fig = draw_presence_chart(data, bg_color='#FFF5F6') if data.get('type') == 'presence' else draw_spectrum(data, interp_sex, bg_color='#FFF5F6')
                 chart_iframe = fig_to_html_iframe(fig)
                 st.markdown(f"""
                     <div class="result-card result-card-abnormal">
@@ -986,7 +1055,7 @@ if st.button("Interpret Results"):
         st.subheader("Normal Results")
         if normal_results:
             for metric, (data, status, explanation, advice) in normal_results.items():
-                fig = draw_presence_chart(data, bg_color='#F4FBF6') if data.get('type') == 'presence' else draw_spectrum(data, sex, bg_color='#F4FBF6')
+                fig = draw_presence_chart(data, bg_color='#F4FBF6') if data.get('type') == 'presence' else draw_spectrum(data, interp_sex, bg_color='#F4FBF6')
                 chart_iframe = fig_to_html_iframe(fig)
                 st.markdown(f"""
                     <div class="result-card result-card-normal">
