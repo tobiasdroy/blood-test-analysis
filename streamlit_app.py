@@ -16,6 +16,15 @@ st.set_page_config(
     layout="wide"
 )
 
+hide_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """
+st.markdown(hide_style, unsafe_allow_html=True)
+
 # ===== DESIGN SYSTEM =====
 st.markdown("""
 <style>
@@ -269,21 +278,29 @@ st.markdown("""
     /* ── Metric row ── */
     .metric-label {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center;
         min-height: 2.5rem;
+        padding: 2px 0;
+        gap: 1px;
+    }
+    .metric-name-row {
+        display: flex;
+        align-items: center;
         font-family: 'figtree', sans-serif;
         font-size: 0.875rem;
         color: var(--text-primary);
         line-height: 1.35;
+        gap: 4px;
+        flex-wrap: wrap;
     }
     .metric-unit {
-        display: flex;
-        align-items: center;
-        min-height: 2.5rem;
+        display: block;
         font-family: 'figtree', sans-serif;
-        font-size: 0.825rem;
+        font-size: 0.75rem;
         color: var(--text-muted);
         font-style: italic;
+        line-height: 1.2;
     }
 
     /* ── Logo ── */
@@ -819,15 +836,18 @@ def fig_to_html_iframe(fig):
 
 def input_blood_metrics(DATA, upload, results):
     for metric, meta in DATA.items():
-        col1, col2, col3 = st.columns([2, 1, 3])
+        col1, col2 = st.columns([3, 2])
 
         with col1:
             st.markdown(
                 f"""<div class="metric-label">
-                    {meta['name']}
-                    <div class="tooltip">ⓘ
-                        <span class="tooltiptext">{meta['explanation']}</span>
+                    <div class="metric-name-row">
+                        {meta['name']}
+                        <div class="tooltip">ⓘ
+                            <span class="tooltiptext">{meta['explanation']}</span>
+                        </div>
                     </div>
+                    <div class="metric-unit">{meta["unit"]}</div>
                 </div>""",
                 unsafe_allow_html=True
             )
@@ -856,12 +876,6 @@ def input_blood_metrics(DATA, upload, results):
                 if raw_value:
                     st.caption("Please enter a valid number.")
 
-        with col3:
-            st.markdown(
-                f'<div class="metric-unit">{meta["unit"]}</div>',
-                unsafe_allow_html=True
-            )
-
         if value > 0:
             results[metric] = {**meta, "value": value}
 
@@ -879,7 +893,7 @@ with logo_col:
 st.title("Blood Test Interpreter")
 st.markdown(
     "<div class='disclaimer-box'>"
-    "<strong>Disclaimer:</strong> This tool is for informational purposes only and is NOT a substitute "
+    "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
     "for professional medical advice, diagnosis, or treatment. Please consult a healthcare professional "
     "if you have any medical concerns."
     "</div>",
@@ -1035,11 +1049,11 @@ with col_results:
                         <div class="result-body" style="margin-top:6px;">
                             <strong>Result:</strong> {data['value']} {data['unit']}
                         </div>
-                        <div class="result-body">
-                            <strong>Advice:</strong> {advice}
-                        </div>
                         <div style="margin-top:12px; border-radius:12px; overflow:hidden;">
                             {chart_iframe}
+                        </div>
+                        <div class="result-body" style="margin-top:10px;">
+                            <strong>Advice:</strong> {advice}
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
