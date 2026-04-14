@@ -893,12 +893,7 @@ if "last_interp" not in st.session_state:
     st.session_state.last_interp = None
 
 # ── Full-width header ──
-logo_col, _ = st.columns([1, 3])
-with logo_col:
-    image = Image.open('assets/logo.png')
-    st.image(image, width='stretch')
-
-st.title("Blood Test Interpreter")
+st.markdown("<h1 style='color: #54565A;'>Blood Test Interpreter</h1>", unsafe_allow_html=True)
 st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
