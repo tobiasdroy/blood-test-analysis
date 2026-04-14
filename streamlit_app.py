@@ -16,14 +16,22 @@ st.set_page_config(
     layout="wide"
 )
 
-hide_style = """
+hide_streamlit_style = """
     <style>
-    #MainMenu {visibility: hidden;}
+    /* Removes the Streamlit footer */
     footer {visibility: hidden;}
+    /* Removes the 'red line' and hamburger menu at the top */
     header {visibility: hidden;}
+    /* Adjusts padding so the app fills the space better */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 0rem;
+        padding-left: 5rem;
+        padding-right: 5rem;
+    }
     </style>
     """
-st.markdown(hide_style, unsafe_allow_html=True)
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # ===== DESIGN SYSTEM =====
 st.markdown("""
