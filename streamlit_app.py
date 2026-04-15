@@ -9,6 +9,8 @@ import plotly.io as pio
 import pdfplumber
 import io
 import re
+from datetime import date
+from pdf_export import generate_pdf_report
 
 
 st.set_page_config(
@@ -1076,3 +1078,18 @@ with col_results:
                 '</div>',
                 unsafe_allow_html=True
             )
+
+        st.divider()
+        pdf_bytes = generate_pdf_report(
+            abnormal_results=abnormal_results,
+            normal_results=normal_results,
+            sex=interp_sex,
+            report_date=date.today(),
+        )
+        st.download_button(
+            label="Download PDF Report",
+            data=pdf_bytes,
+            file_name=f"blood_test_report_{date.today().isoformat()}.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
