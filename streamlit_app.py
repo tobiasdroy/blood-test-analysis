@@ -1040,7 +1040,7 @@ with col_results:
         st.download_button(
             label="Download PDF Report",
             data=pdf_bytes,
-            file_name=f"blood_test_report_{date.today().isoformat()}.pdf",
+            file_name=f"blood_test_report{'_' + patient_name.replace(' ', '_') if patient_name else ''}_{date.today().isoformat()}.pdf",
             mime="application/pdf",
             use_container_width=True,
         )
