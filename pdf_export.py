@@ -229,10 +229,13 @@ def _build_spectrum_drawing(data, sex, width=440):
 
 
 # ── Header ───────────────────────────────────────────────────────────────────
-def _build_header(styles, sex, report_date, content_width):
+def _build_header(styles, sex, report_date, content_width, patient_name=""):
     day_str    = f"{report_date.day} {report_date.strftime('%B %Y')}"
     title_para = Paragraph('Blood Test Report', styles['title'])
-    sub_para   = Paragraph(f"{day_str} &nbsp;&middot;&nbsp; Sex: {sex}", styles['subtitle'])
+    subtitle_parts = [day_str, f"Sex: {sex}"]
+    if patient_name:
+        subtitle_parts.insert(0, patient_name)
+    sub_para   = Paragraph(" &nbsp;&middot;&nbsp; ".join(subtitle_parts), styles['subtitle'])
 
     logo_path = _ASSETS / 'logo.png'
     if logo_path.exists():
@@ -429,7 +432,7 @@ def _page_footer(canvas, doc):
 
 
 # ── Public entry point ────────────────────────────────────────────────────────
-def generate_pdf_report(abnormal_results, normal_results, sex, report_date=None):
+def generate_pdf_report(abnormal_results, normal_results, sex, report_date=None, patient_name=""):
     """Build and return a PDF blood test report as bytes."""
     if report_date is None:
         report_date = date.today()
@@ -463,7 +466,7 @@ def generate_pdf_report(abnormal_results, normal_results, sex, report_date=None)
     story = []
 
     # Header + rule
-    story.append(_build_header(styles, sex, report_date, content_w))
+    story.append(_build_header(styles, sex, report_date, content_w, patient_name))
     story.append(Spacer(1, 10))
     story.append(HRFlowable(width='100%', thickness=1, color=ORANGE, spaceAfter=14))
 

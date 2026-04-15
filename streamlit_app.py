@@ -590,8 +590,25 @@ def _parse_numeric(s):
         return None
 
 
+def _extract_patient_name(lines):
+    """Extract patient name from PDF lines (handles surnames split across lines)."""
+    for i, line in enumerate(lines):
+        m = re.search(r'Patient:\s+(.+?)(?:\s+Sex at birth:|$)', line, re.IGNORECASE)
+        if m:
+            name = m.group(1).strip()
+            if i + 1 < len(lines):
+                next_line = lines[i + 1].strip()
+                if next_line and not re.match(
+                    r'^(DOB:|Name\s|VFH|Patient ID:|Laboratory|Report|Results|Sample)',
+                    next_line, re.IGNORECASE
+                ):
+                    name = f"{name} {next_line}"
+            return name
+    return ""
+
+
 def parse_lab_pdf(pdf_bytes):
-    """Extract blood test values from a lab PDF using pdfplumber."""
+    """Extract blood test values and patient name from a lab PDF using pdfplumber."""
     results = {}
     hba1c_seen = 0
 
@@ -643,7 +660,7 @@ def parse_lab_pdf(pdf_bytes):
             results[metric_key] = value
             break
 
-    return results
+    return results, _extract_patient_name(lines)
 
 
 def draw_spectrum(data, gender, bg_color='#FFFFFF'):
@@ -894,9 +911,11 @@ def input_blood_metrics(DATA, upload, results):
 # ── Session state ──
 if "last_interp" not in st.session_state:
     st.session_state.last_interp = None
+if "patient_name" not in st.session_state:
+    st.session_state.patient_name = ""
 
 # ── Full-width header ──
-st.markdown("<h1 style='color: #FF0000 !important;'>Blood Test Interpreter</h1>", unsafe_allow_html=True)
+st.markdown("<h1>Blood Test Interpreter</h1>", unsafe_allow_html=True)
 st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
@@ -934,8 +953,10 @@ with col_input:
         if uploaded_file.name.lower().endswith(".pdf"):
             with st.spinner("Reading your lab report..."):
                 try:
-                    parsed = parse_lab_pdf(uploaded_file.read())
+                    parsed, extracted_name = parse_lab_pdf(uploaded_file.read())
                     upload = True
+                    if extracted_name:
+                        st.session_state.patient_name = extracted_name
                     for metric_key, value in parsed.items():
                         if metric_key in BLOOD_METRIC_DATA:
                             meta = BLOOD_METRIC_DATA[metric_key]
@@ -1003,11 +1024,18 @@ with col_results:
 
         st.header("Interpretation")
 
+        patient_name = st.text_input(
+            "Name for report",
+            value=st.session_state.patient_name,
+            placeholder="Optional — leave blank to omit",
+            label_visibility="visible",
+        )
         pdf_bytes = generate_pdf_report(
             abnormal_results=abnormal_results,
             normal_results=normal_results,
             sex=interp_sex,
             report_date=date.today(),
+            patient_name=patient_name,
         )
         st.download_button(
             label="Download PDF Report",
