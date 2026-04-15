@@ -79,7 +79,7 @@ st.markdown("""
         font-family: 'poppins', sans-serif !important;
         font-weight: 700 !important;
         font-size: 2rem !important;
-        color: var(--text-primary) !important;
+        color: #54565A !important;
         letter-spacing: -0.3px !important;
         line-height: 1.2 !important;
         margin-bottom: 1.25rem !important;
@@ -893,7 +893,7 @@ if "last_interp" not in st.session_state:
     st.session_state.last_interp = None
 
 # ── Full-width header ──
-st.markdown("<h1 style='color: #54565A;'>Blood Test Interpreter</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #FF0000 !important;'>Blood Test Interpreter</h1>", unsafe_allow_html=True)
 st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
@@ -950,30 +950,8 @@ with col_input:
                     meta = BLOOD_METRIC_DATA[metric]
                     results[metric] = {**meta, "value": value}
 
-    with st.expander("Full Blood Count", expanded=True):
-        input_blood_metrics(FULL_BLOOD_COUNT, upload, results)
-    with st.expander("Kidney Function"):
-        input_blood_metrics(KIDNEY_FUNCTION, upload, results)
-    with st.expander("Heart Health"):
-        input_blood_metrics(HEART_HEALTH, upload, results)
-    with st.expander("Diabetes Markers"):
-        input_blood_metrics(DIABETES_MARKERS, upload, results)
-    with st.expander("Iron Status"):
-        input_blood_metrics(IRON_STATUS, upload, results)
-    with st.expander("Bone Profile"):
-        input_blood_metrics(BONE_PROFILE, upload, results)
-    with st.expander("Muscle Health"):
-        input_blood_metrics(MUSCLE_HEALTH, upload, results)
-    with st.expander("Liver Function"):
-        input_blood_metrics(LIVER_FUNCTION, upload, results)
-    with st.expander("Urine Analysis"):
-        input_blood_metrics(URINE_ANALYSIS, upload, results)
-    with st.expander("Thyroid Function"):
-        input_blood_metrics(THYROID_FUNCTION, upload, results)
-    with st.expander("Cancer Markers"):
-        input_blood_metrics(CANCER_MARKERS, upload, results)
-    with st.expander("Vitamins"):
-        input_blood_metrics(VITAMINS, upload, results)
+    sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
+    input_blood_metrics(sorted_metrics, upload, results)
 
     if st.button("Interpret Results"):
         if not results:
