@@ -68,7 +68,8 @@ st.markdown("""
         border-bottom: 1px solid var(--border-subtle) !important;
     }
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1rem !important;
+        padding-bottom: 3rem !important;
         max-width: 1400px !important;
         padding-left: 2rem !important;
         padding-right: 2rem !important;
@@ -950,10 +951,12 @@ with col_input:
                     meta = BLOOD_METRIC_DATA[metric]
                     results[metric] = {**meta, "value": value}
 
+    interpret_clicked = st.button("Interpret Results")
+
     sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
     input_blood_metrics(sorted_metrics, upload, results)
 
-    if st.button("Interpret Results"):
+    if interpret_clicked:
         if not results:
             st.session_state.last_interp = {"error": True}
         else:
@@ -978,7 +981,7 @@ with col_results:
         st.markdown(
             "<div class='results-placeholder'>"
             "<div class='results-placeholder-icon'>&#128203;</div>"
-            "Enter your blood test values on the left,<br>then click <strong>Interpret Results</strong>."
+            "Enter your blood test values,<br>then click <strong>Interpret Results</strong>."
             "</div>",
             unsafe_allow_html=True
         )
