@@ -593,7 +593,7 @@ def _parse_numeric(s):
 def _extract_patient_name(lines):
     """Extract patient name from PDF lines (handles surnames split across lines)."""
     for i, line in enumerate(lines):
-        m = re.search(r'Patient:\s+(.+?)(?:\s+Sex at birth:|$)', line, re.IGNORECASE)
+        m = re.search(r'Patient:\s+(.+?)(?:\s+(?:Sex at birth:|Gender:)|$)', line, re.IGNORECASE)
         if m:
             name = m.group(1).strip()
             if i + 1 < len(lines):
