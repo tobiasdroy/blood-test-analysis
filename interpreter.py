@@ -540,7 +540,7 @@ LIVER_FUNCTION = {
 
 URINE_ANALYSIS = {
     "ph": {
-        "name": "pH",
+        "name": "pH (Urine)",
         "type": "hilo",
         "gender_specific": False,
         "range": (4.5, 8.0),
@@ -570,7 +570,7 @@ URINE_ANALYSIS = {
         "advice_low": "Absence of glucose in your urine is the expected, normal finding. It means your blood sugar is staying within the range your kidneys can handle."    
     },
     "ketones": {
-        "name": "Ketones",
+        "name": "Ketones (Urine)",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -580,7 +580,7 @@ URINE_ANALYSIS = {
         "advice_low": "Absence of ketones in your urine is the expected, normal finding when your body is using glucose as its primary energy source."    
     },
     "wbcs": {
-        "name": "White Blood Cells",
+        "name": "White Blood Cells (Urine)",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -590,7 +590,7 @@ URINE_ANALYSIS = {
         "advice_low": "Absence of white blood cells in your urine is the expected, normal finding. It indicates no active infection or inflammation in your urinary tract." 
     },
     "rbcs": {
-        "name": "Red Blood Cells",
+        "name": "Red Blood Cells (Urine)",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -600,7 +600,7 @@ URINE_ANALYSIS = {
         "advice_low": "Absence of red blood cells in your urine is the expected, normal finding." 
     },
     "casts": {
-        "name": "Casts",
+        "name": "Casts (Urine)",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -610,7 +610,7 @@ URINE_ANALYSIS = {
         "advice_low": "Absence of casts in your urine is the expected, normal finding." 
     },
     "bacterial_count": {
-        "name": "Bacterial Count",
+        "name": "Bacterial Count (Urine)",
         "type": "presence",
         "gender_specific": False,
         "range": (0, 0),
@@ -736,15 +736,33 @@ def interpret_result(metric, data, gender):
         low_end, high_end = data["range"]
     
     # 3. Simple interpretation logic
-    if data["value"] < low_end:
-        status = "Low"
-        advice = data.get("advice_low", "See a healthcare professional for specific advice.")
-    elif data["value"] > high_end:
-        status = "High"
-        advice = data.get("advice_high", "See a healthcare professional for specific advice.")
+    metric_type = data.get("type", "hilo")
+    if metric_type == "lower_bound":
+        # Only the low end matters — being high is not abnormal
+        if data["value"] < low_end:
+            status = "Low"
+            advice = data.get("advice_low", "See a healthcare professional for specific advice.")
+        else:
+            status = "Normal"
+            advice = "Maintain your current healthy lifestyle."
+    elif metric_type == "upper_bound":
+        # Only the high end matters — being low is not abnormal
+        if data["value"] > high_end:
+            status = "High"
+            advice = data.get("advice_high", "See a healthcare professional for specific advice.")
+        else:
+            status = "Normal"
+            advice = "Maintain your current healthy lifestyle."
     else:
-        status = "Normal"
-        advice = "Maintain your current healthy lifestyle."
+        if data["value"] < low_end:
+            status = "Low"
+            advice = data.get("advice_low", "See a healthcare professional for specific advice.")
+        elif data["value"] > high_end:
+            status = "High"
+            advice = data.get("advice_high", "See a healthcare professional for specific advice.")
+        else:
+            status = "Normal"
+            advice = "Maintain your current healthy lifestyle."
 
     explanation = data["explanation"]
     

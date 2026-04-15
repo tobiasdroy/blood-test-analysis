@@ -726,8 +726,8 @@ def draw_spectrum(data, gender, bg_color='#FFFFFF'):
         x=[value], y=[0.5],
         mode='markers+text',
         marker=dict(
-            color='#1A1B1E', size=14, symbol='circle',
-            line=dict(width=2, color="rgba(255,255,255,0.6)")
+            color='white', size=14, symbol='circle',
+            line=dict(width=2, color="rgba(0,0,0,0.3)")
         ),
         text=[str(value)],
         textposition="top center",
@@ -804,8 +804,8 @@ def draw_presence_chart(data, bg_color='#FFFFFF'):
             x=[value], y=[0.5],
             mode='markers+text',
             marker=dict(
-                color='#1A1B1E', size=14, symbol='circle',
-                line=dict(width=2, color="rgba(255,255,255,0.6)")
+                color='white', size=14, symbol='circle',
+                line=dict(width=2, color="rgba(0,0,0,0.3)")
             ),
             text=[str(value)],
             textposition="top center",
@@ -1003,6 +1003,20 @@ with col_results:
 
         st.header("Interpretation")
 
+        pdf_bytes = generate_pdf_report(
+            abnormal_results=abnormal_results,
+            normal_results=normal_results,
+            sex=interp_sex,
+            report_date=date.today(),
+        )
+        st.download_button(
+            label="Download PDF Report",
+            data=pdf_bytes,
+            file_name=f"blood_test_report_{date.today().isoformat()}.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
+
         st.markdown(f"""
             <div class="summary-strip">
                 <div class="summary-chip summary-chip-abnormal">
@@ -1079,17 +1093,3 @@ with col_results:
                 unsafe_allow_html=True
             )
 
-        st.divider()
-        pdf_bytes = generate_pdf_report(
-            abnormal_results=abnormal_results,
-            normal_results=normal_results,
-            sex=interp_sex,
-            report_date=date.today(),
-        )
-        st.download_button(
-            label="Download PDF Report",
-            data=pdf_bytes,
-            file_name=f"blood_test_report_{date.today().isoformat()}.pdf",
-            mime="application/pdf",
-            use_container_width=True,
-        )

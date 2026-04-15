@@ -4,6 +4,7 @@
 import io
 from datetime import date
 from pathlib import Path
+from PIL import Image as PILImage
 
 from reportlab.platypus import (
     BaseDocTemplate, PageTemplate, Frame,
@@ -18,6 +19,7 @@ from reportlab.lib.colors import HexColor, white
 from reportlab.lib.enums import TA_CENTER
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.utils import simpleSplit
 
 # ── Paths ───────────────────────────────────────────────────────────────────
 _HERE   = Path(__file__).parent
@@ -158,7 +160,7 @@ def _build_spectrum_drawing(data, sex, width=440):
             d.add(Rect(0, BAR_Y0, width, BAR_H, fillColor=BG_ELEVATED, strokeColor=None))
             d.add(Rect(0, BAR_Y0, bar_px, BAR_H, fillColor=RED_BAR, strokeColor=None))
             d.add(Circle(min(bar_px, width - 5), (BAR_Y0 + BAR_Y1) / 2, 5,
-                         fillColor=TEXT_PRIMARY, strokeColor=WHITE, strokeWidth=1))
+                         fillColor=WHITE, strokeColor=TEXT_PRIMARY, strokeWidth=1))
         return d
 
     # ── Regular spectrum ──
@@ -219,7 +221,7 @@ def _build_spectrum_drawing(data, sex, width=440):
 
     # Value marker and label
     d.add(Circle(val_x, (BAR_Y0 + BAR_Y1) / 2, 6,
-                 fillColor=TEXT_PRIMARY, strokeColor=WHITE, strokeWidth=1.5))
+                 fillColor=WHITE, strokeColor=TEXT_PRIMARY, strokeWidth=1.5))
     d.add(String(val_x, VAL_Y, f'{value} {unit}',
                  fontName='Figtree', fontSize=7.5, fillColor=TEXT_PRIMARY, textAnchor='middle'))
 
@@ -230,13 +232,17 @@ def _build_spectrum_drawing(data, sex, width=440):
 def _build_header(styles, sex, report_date, content_width):
     day_str    = f"{report_date.day} {report_date.strftime('%B %Y')}"
     title_para = Paragraph('Blood Test Report', styles['title'])
-    sub_para   = Paragraph(f"{day_str} &nbsp;&middot;&nbsp; Biological sex: {sex}", styles['subtitle'])
+    sub_para   = Paragraph(f"{day_str} &nbsp;&middot;&nbsp; Sex: {sex}", styles['subtitle'])
 
     logo_path = _ASSETS / 'logo.png'
     if logo_path.exists():
-        logo_img = Image(str(logo_path), width=110, height=44)
+        with PILImage.open(str(logo_path)) as pil_img:
+            img_w, img_h = pil_img.size
+        max_w, max_h = 120, 50
+        scale    = min(max_w / img_w, max_h / img_h)
+        logo_img = Image(str(logo_path), width=img_w * scale, height=img_h * scale)
         data     = [[logo_img, [title_para, sub_para]]]
-        col_w    = [120, content_width - 120]
+        col_w    = [max_w + 10, content_width - max_w - 10]
     else:
         data  = [[[title_para, sub_para]]]
         col_w = [content_width]
@@ -392,19 +398,33 @@ _DISCLAIMER = (
 def _page_footer(canvas, doc):
     canvas.saveState()
     page_w, _ = A4
-    margin   = 2 * cm
-    rule_y   = 1.6 * cm
-    text_y   = 1.0 * cm
+    margin     = 2 * cm
+    font_name  = 'Figtree'
+    font_size  = 7.5
+    line_h     = 10
+    page_num   = f'Page {doc.page}'
+
+    # Measure page number width to reserve space
+    pn_width = canvas.stringWidth(page_num, font_name, font_size)
+    text_w   = page_w - 2 * margin - pn_width - 10
+
+    # Wrap disclaimer to fit
+    lines = simpleSplit(_DISCLAIMER, font_name, font_size, text_w)
+    total_h = len(lines) * line_h
+
+    rule_y  = margin * 0.8 + total_h
+    text_y0 = rule_y - line_h
 
     canvas.setStrokeColor(ORANGE)
     canvas.setLineWidth(0.8)
     canvas.line(margin, rule_y, page_w - margin, rule_y)
 
-    canvas.setFont('Figtree', 7.5)
+    canvas.setFont(font_name, font_size)
     canvas.setFillColor(TEXT_MUTED)
-    canvas.drawString(margin, text_y, _DISCLAIMER)
+    for i, line in enumerate(lines):
+        canvas.drawString(margin, text_y0 - i * line_h, line)
 
-    canvas.drawRightString(page_w - margin, text_y, f'Page {doc.page}')
+    canvas.drawRightString(page_w - margin, text_y0, page_num)
     canvas.restoreState()
 
 
