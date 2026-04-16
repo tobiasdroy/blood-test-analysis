@@ -854,6 +854,17 @@ if "patient_name" not in st.session_state:
 # ── Full-width header ──
 st.markdown("<h1>Blood Test Interpreter</h1>", unsafe_allow_html=True)
 st.markdown(
+    "<p style='font-family:figtree,sans-serif;font-size:0.95rem;line-height:1.7;"
+    "color:var(--text-secondary);margin:0 0 20px;'>"
+    "The Vital Flow Health blood test interpreter helps you understand what your blood test results actually mean. "
+    "Enter your values and the tool compares each one against established reference ranges, "
+    "flags anything outside normal bounds, and explains what it may indicate in language that you can understand. "
+    "It's designed for anyone who has received a blood test report and wants a clearer picture "
+    "of their results before, or alongside, a conversation with their doctor."
+    "</p>",
+    unsafe_allow_html=True
+)
+st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
     "for professional medical advice, diagnosis, or treatment. Please consult a healthcare professional "
