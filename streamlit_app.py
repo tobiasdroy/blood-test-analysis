@@ -4,8 +4,6 @@ import streamlit as st
 from interpreter import interpret_result, BLOOD_METRIC_DATA, FULL_BLOOD_COUNT, KIDNEY_FUNCTION, HEART_HEALTH, DIABETES_MARKERS, IRON_STATUS, BONE_PROFILE, MUSCLE_HEALTH, LIVER_FUNCTION, URINE_ANALYSIS, THYROID_FUNCTION, CANCER_MARKERS, VITAMINS
 import pandas as pd
 from PIL import Image
-import plotly.graph_objects as go
-import plotly.io as pio
 import pdfplumber
 import io
 import re
@@ -693,173 +691,112 @@ def draw_spectrum(data, gender, bg_color='#FFFFFF'):
         eff = value if value != low else (low * 1.3 if low > 0 else low + 1)
         if eff >= low:
             # Normal: solve for threshold at 20% from left, marker at 60%
-            # chart_min = (3*low - eff) / 2  →  total = (eff - chart_min) / 0.60
             chart_min = max(0, (3 * low - eff) / 2)
             chart_max = chart_min + (eff - chart_min) / 0.60
         else:
             # Abnormal: solve for marker at 30% from left, threshold at 55%
-            # chart_min = 2.2*eff - 1.2*low  →  total = (low - chart_min) / 0.55
             chart_min = max(0, 2.2 * eff - 1.2 * low)
             chart_max = chart_min + (low - chart_min) / 0.55
 
-    fig = go.Figure()
-    y_low, y_high = 0.38, 0.62
+    x_range = chart_max - chart_min
 
-    shapes = []
+    def pct(v):
+        return (v - chart_min) / x_range * 100
 
-    # Green zone: extends right to chart_max for lower_bound (no upper danger),
-    # left to chart_min for upper_bound (no lower danger), otherwise bounded.
+    low_pct = pct(low)
+    high_pct = pct(high)
+    val_pct = max(2.0, min(98.0, pct(value)))
+
+    RED, GREEN = '#D93545', '#3DB866'
+
     if metric_type == 'lower_bound':
-        shapes.append(dict(
-            type="rect", x0=low, x1=chart_max, y0=y_low, y1=y_high,
-            fillcolor="#3DB866", line_width=0, layer="below"
-        ))
+        gradient = (f'linear-gradient(to right,'
+                    f'{RED} 0%,{RED} {low_pct:.2f}%,'
+                    f'{GREEN} {low_pct:.2f}%,{GREEN} 100%)')
+        tick_pcts = [(low_pct, low)]
     elif metric_type == 'upper_bound':
-        shapes.append(dict(
-            type="rect", x0=chart_min, x1=high, y0=y_low, y1=y_high,
-            fillcolor="#3DB866", line_width=0, layer="below"
-        ))
+        gradient = (f'linear-gradient(to right,'
+                    f'{GREEN} 0%,{GREEN} {high_pct:.2f}%,'
+                    f'{RED} {high_pct:.2f}%,{RED} 100%)')
+        tick_pcts = [(high_pct, high)]
     else:
-        shapes.append(dict(
-            type="rect", x0=low, x1=high, y0=y_low, y1=y_high,
-            fillcolor="#3DB866", line_width=0, layer="below"
-        ))
+        gradient = (f'linear-gradient(to right,'
+                    f'{RED} 0%,{RED} {low_pct:.2f}%,'
+                    f'{GREEN} {low_pct:.2f}%,{GREEN} {high_pct:.2f}%,'
+                    f'{RED} {high_pct:.2f}%,{RED} 100%)')
+        tick_pcts = [(low_pct, low), (high_pct, high)]
 
-    # Red zone below the lower threshold (not for upper_bound)
-    if chart_min < low and metric_type != 'upper_bound':
-        shapes.append(dict(
-            type="rect", x0=chart_min, x1=low, y0=y_low, y1=y_high,
-            fillcolor="#D93545", line_width=0, layer="below"
-        ))
-
-    # Red zone above the upper threshold (not for lower_bound)
-    if chart_max > high and metric_type != 'lower_bound':
-        shapes.append(dict(
-            type="rect", x0=high, x1=chart_max, y0=y_low, y1=y_high,
-            fillcolor="#D93545", line_width=0, layer="below"
-        ))
-
-    fig.add_trace(go.Scatter(
-        x=[value], y=[0.5],
-        mode='markers+text',
-        marker=dict(
-            color='white', size=14, symbol='circle',
-            line=dict(width=2, color="rgba(0,0,0,0.3)")
-        ),
-        text=[str(value)],
-        textposition="top center",
-        textfont=dict(color='#1A1B1E', size=11, family='Arial, sans-serif'),
-        name="Your Result",
-        hovertemplate=f"Result: {value} {unit}<extra></extra>"
-    ))
-
-    fig.update_layout(
-        shapes=shapes,
-        height=105,
-        margin=dict(l=16, r=16, t=22, b=26),
-        xaxis=dict(
-            showgrid=False,
-            zeroline=False,
-            range=[chart_min, chart_max],
-            tickvals=[low] if metric_type == 'lower_bound' else ([high] if metric_type == 'upper_bound' else [low, high]),
-            ticktext=[str(low)] if metric_type == 'lower_bound' else ([str(high)] if metric_type == 'upper_bound' else [str(low), str(high)]),
-            tickfont=dict(color='#4A4B55', size=10, family='Arial, sans-serif'),
-            fixedrange=True
-        ),
-        yaxis=dict(
-            showticklabels=False, showgrid=False, zeroline=False,
-            range=[0, 1], fixedrange=True
-        ),
-        plot_bgcolor=bg_color,
-        paper_bgcolor=bg_color,
-        font=dict(family='Arial, sans-serif', color='#4A4B55')
+    ticks_html = ''.join(
+        f'<div style="position:absolute;left:{tp:.2f}%;transform:translateX(-50%);'
+        f'top:22px;font-size:10px;color:#4A4B55;font-family:Arial,sans-serif;'
+        f'white-space:nowrap;">{tv}</div>'
+        for tp, tv in tick_pcts
     )
 
-    return fig
+    return (
+        f'<!DOCTYPE html><html><body style="margin:0;padding:0;'
+        f'background:{bg_color};overflow:hidden;">'
+        f'<div style="padding:20px 16px 30px;box-sizing:border-box;">'
+        f'<div style="position:relative;height:15px;border-radius:8px;background:{gradient};">'
+        f'<div style="position:absolute;left:{val_pct:.2f}%;top:50%;'
+        f'transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;'
+        f'background:white;border:1.5px solid rgba(0,0,0,0.25);box-sizing:border-box;"></div>'
+        f'<div style="position:absolute;left:{val_pct:.2f}%;bottom:calc(100% + 5px);'
+        f'transform:translateX(-50%);font-size:11px;font-weight:500;color:#1A1B1E;'
+        f'font-family:Arial,sans-serif;white-space:nowrap;">{value}</div>'
+        f'{ticks_html}'
+        f'</div>'
+        f'</div>'
+        f'</body></html>'
+    )
 
 
 def draw_presence_chart(data, bg_color='#FFFFFF'):
     value = data['value']
-    unit = data['unit']
-
-    fig = go.Figure()
-    y_low, y_high = 0.38, 0.62
-    shapes = []
 
     if value == 0:
-        chart_max = 1
-        shapes.append(dict(
-            type="rect", x0=0, x1=chart_max, y0=y_low, y1=y_high,
-            fillcolor="#1F8C47", line_width=0, layer="below"
-        ))
-        fig.add_annotation(
-            x=0.5, y=0.5,
-            xref='paper', yref='y',
-            text="Not detected",
-            showarrow=False,
-            font=dict(color='white', size=11, family='Arial, sans-serif'),
+        bar_html = (
+            f'<div style="position:relative;height:15px;border-radius:8px;'
+            f'background:#1F8C47;display:flex;align-items:center;justify-content:center;">'
+            f'<span style="font-size:11px;color:white;font-family:Arial,sans-serif;'
+            f'font-weight:500;position:relative;z-index:1;">Not detected</span>'
+            f'</div>'
+            f'<div style="margin-top:7px;font-size:10px;color:#4A4B55;'
+            f'font-family:Arial,sans-serif;text-align:center;">0 (ideal)</div>'
         )
-        # Invisible trace so layout renders cleanly
-        fig.add_trace(go.Scatter(
-            x=[0], y=[0.5], mode='markers',
-            marker=dict(color='rgba(0,0,0,0)', size=1),
-            hoverinfo='skip', showlegend=False
-        ))
     else:
         chart_max = value * 2.5
-        # Grey background track
-        shapes.append(dict(
-            type="rect", x0=0, x1=chart_max, y0=y_low, y1=y_high,
-            fillcolor="#EEEEF1", line_width=0, layer="below"
-        ))
-        # Red fill proportional to detected amount
-        shapes.append(dict(
-            type="rect", x0=0, x1=value, y0=y_low, y1=y_high,
-            fillcolor="#C52536", line_width=0, layer="below"
-        ))
-        fig.add_trace(go.Scatter(
-            x=[value], y=[0.5],
-            mode='markers+text',
-            marker=dict(
-                color='white', size=14, symbol='circle',
-                line=dict(width=2, color="rgba(0,0,0,0.3)")
-            ),
-            text=[str(value)],
-            textposition="top center",
-            textfont=dict(color='#1A1B1E', size=11, family='Arial, sans-serif'),
-            name="Your Result",
-            hovertemplate=f"Result: {value} {unit}<extra></extra>"
-        ))
+        fill_pct = (value / chart_max) * 100
+        val_pct = max(2.0, min(98.0, fill_pct))
+        bar_html = (
+            f'<div style="position:relative;height:15px;border-radius:8px;background:#EEEEF1;">'
+            f'<div style="position:absolute;left:0;top:0;height:100%;width:{fill_pct:.2f}%;'
+            f'background:#C52536;border-radius:8px 0 0 8px;"></div>'
+            f'<div style="position:absolute;left:{val_pct:.2f}%;top:50%;'
+            f'transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;'
+            f'background:white;border:1.5px solid rgba(0,0,0,0.25);'
+            f'box-sizing:border-box;z-index:2;"></div>'
+            f'<div style="position:absolute;left:{val_pct:.2f}%;bottom:calc(100% + 5px);'
+            f'transform:translateX(-50%);font-size:11px;font-weight:500;color:#1A1B1E;'
+            f'font-family:Arial,sans-serif;white-space:nowrap;z-index:3;">{value}</div>'
+            f'</div>'
+            f'<div style="margin-top:7px;font-size:10px;color:#4A4B55;'
+            f'font-family:Arial,sans-serif;">0 (ideal)</div>'
+        )
 
-    fig.update_layout(
-        shapes=shapes,
-        height=105,
-        margin=dict(l=16, r=16, t=22, b=26),
-        xaxis=dict(
-            showgrid=False,
-            zeroline=False,
-            range=[0, chart_max],
-            tickvals=[0],
-            ticktext=["0 (ideal)"],
-            tickfont=dict(color='#4A4B55', size=10, family='Arial, sans-serif'),
-            fixedrange=True
-        ),
-        yaxis=dict(
-            showticklabels=False, showgrid=False, zeroline=False,
-            range=[0, 1], fixedrange=True
-        ),
-        plot_bgcolor=bg_color,
-        paper_bgcolor=bg_color,
-        font=dict(family='Arial, sans-serif', color='#4A4B55')
+    return (
+        f'<!DOCTYPE html><html><body style="margin:0;padding:0;'
+        f'background:{bg_color};overflow:hidden;">'
+        f'<div style="padding:20px 16px 16px;box-sizing:border-box;">'
+        f'{bar_html}'
+        f'</div>'
+        f'</body></html>'
     )
 
-    return fig
 
-
-def fig_to_html_iframe(fig):
-    html_str = pio.to_html(fig, full_html=False, include_plotlyjs='cdn', config={'displayModeBar': False})
-    encoded = html_str.replace('"', '&quot;')
-    return f'<iframe srcdoc="{encoded}" scrolling="no" style="width:100%; height:110px; border:none; border-radius:12px; overflow:hidden; display:block;"></iframe>'
+def fig_to_html_iframe(html_content):
+    encoded = html_content.replace('"', '&quot;')
+    return f'<iframe srcdoc="{encoded}" scrolling="no" style="width:100%; height:90px; border:none; border-radius:12px; overflow:hidden; display:block;"></iframe>'
 
 
 def input_blood_metrics(DATA, upload, results):
