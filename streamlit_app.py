@@ -868,7 +868,7 @@ st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
     "for professional medical advice, diagnosis, or treatment. Please consult a healthcare professional "
-    "if you have any medical concerns."
+    "if you have any medical concerns. Your data is private and not stored by Vital Flow Health for any purposes."
     "</div>",
     unsafe_allow_html=True
 )
