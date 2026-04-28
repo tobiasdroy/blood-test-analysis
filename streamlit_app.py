@@ -9,6 +9,7 @@ import io
 import re
 from datetime import date
 from pdf_export import generate_pdf_report
+from salesforce_client import submit_results
 
 
 st.set_page_config(
@@ -69,7 +70,7 @@ st.markdown("""
     }
     .block-container {
         padding-top: 1rem !important;
-        padding-bottom: 3rem !important;
+        padding-bottom: 72px !important;
         max-width: 1400px !important;
         padding-left: 2rem !important;
         padding-right: 2rem !important;
@@ -530,6 +531,11 @@ st.markdown("""
         color: var(--text-muted);
         margin-top: 4px;
     }
+    .consent-toggle-divider {
+        border: none;
+        border-top: 1px solid var(--border-subtle);
+        margin: 0;
+    }
     .consent-checklist {
         font-family: 'figtree', sans-serif;
         font-size: 0.9rem;
@@ -545,19 +551,72 @@ st.markdown("""
         padding-top: 14px;
         border-top: 1px solid var(--border-subtle);
     }
-    .consent-success-icon {
-        font-size: 2rem;
-        margin-bottom: 10px;
+
+    /* ── App footer: fixed at bottom of viewport, always visible ── */
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        z-index: 50 !important;
+        background: var(--bg-page) !important;
+        border-top: 1px solid var(--border-subtle) !important;
+        padding: 10px 0 !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        gap: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
     }
-    .data-settings-link {
-        font-family: 'figtree', sans-serif;
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        cursor: pointer;
+    /* Footer link-style buttons */
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: unset !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-family: 'figtree', sans-serif !important;
+        font-size: 0.80rem !important;
+        color: var(--text-muted) !important;
+        text-decoration: none !important;
+        letter-spacing: 0 !important;
+        margin-top: 0 !important;
+        line-height: 1 !important;
     }
-    .data-settings-link:hover {
-        color: var(--orange);
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button p {
+        color: var(--text-muted) !important;
+        font-family: 'figtree', sans-serif !important;
+        font-size: 0.80rem !important;
+        text-decoration: underline !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button:hover {
+        background: none !important;
+        color: var(--orange) !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button:hover p {
+        color: var(--orange) !important;
+    }
+    /* Data settings modal: pad the content column (two selectors for robustness) */
+    [data-testid="stColumn"]:has(#ds-modal-marker) > div > [data-testid="stVerticalBlock"],
+    [data-testid="stColumn"]:has(#ds-modal-marker) > div > div > [data-testid="stVerticalBlock"] {
+        padding: 32px 36px 28px !important;
+        box-sizing: border-box !important;
+    }
+    /* Save/cancel row in ds modal should not look like toggle-row cards */
+    [data-testid="stColumn"]:has(#ds-modal-marker) [data-testid="stHorizontalBlock"] {
+        background: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin: 16px 0 0 !important;
+        width: 100% !important;
+        gap: 8px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -940,14 +999,16 @@ if "patient_name" not in st.session_state:
 # ── Consent state ──
 if "consent_done" not in st.session_state:
     st.session_state.consent_done = False
-if "consent_step" not in st.session_state:
-    st.session_state.consent_step = 1
 if "consent_improve" not in st.session_state:
     st.session_state.consent_improve = True   # locked on
 if "consent_research" not in st.session_state:
     st.session_state.consent_research = False
 if "consent_insights" not in st.session_state:
     st.session_state.consent_insights = False
+if "show_modal" not in st.session_state:
+    st.session_state.show_modal = None
+if "sf_submitted_hash" not in st.session_state:
+    st.session_state.sf_submitted_hash = None
 
 
 _PRIVACY_NOTICE = """
@@ -980,161 +1041,523 @@ We retain your data only for as long as necessary for the purposes described abo
 """
 
 
-def _show_consent_flow():
-    """Renders the multi-step consent flow and stops page rendering until complete."""
-    step = st.session_state.consent_step
+
+def _show_privacy_notice_modal():
+    """Renders the privacy notice as a fixed modal overlay (session-state driven)."""
+    st.markdown("""
+<style>
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(15,15,20,0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1099;
+    pointer-events: all;
+}
+[data-testid="stHorizontalBlock"]:has(#pn-modal-marker) {
+    height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+[data-testid="stColumn"]:has(#pn-modal-marker) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1100 !important;
+    width: min(560px, 92vw) !important;
+    max-height: 84vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;
+    padding: 28px 32px 24px !important;
+    pointer-events: all !important;
+}
+[data-testid="stColumn"]:has(#pn-modal-marker) > div {
+    background: #FFFFFF !important;
+}
+/* Close button row: taken out of normal flow */
+[data-testid="stColumn"]:has(#pn-modal-marker) [data-testid="stHorizontalBlock"]:has(#pn-close-marker) {
+    height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* Close column: pinned to the top-right corner of the modal card */
+[data-testid="stColumn"]:has(#pn-modal-marker) [data-testid="stColumn"]:has(#pn-close-marker) {
+    position: absolute !important;
+    top: 12px !important;
+    right: 16px !important;
+    width: auto !important;
+    flex: none !important;
+    min-width: unset !important;
+    z-index: 1 !important;
+}
+[data-testid="stColumn"]:has(#pn-close-marker) [data-testid="stButton"] > button {
+    background: rgba(0,0,0,0.07) !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 50% !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 0 !important;
+}
+[data-testid="stColumn"]:has(#pn-close-marker) [data-testid="stButton"] > button p {
+    color: #555 !important;
+    margin: 0 !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+[data-testid="stColumn"]:has(#pn-close-marker) [data-testid="stButton"] > button:hover {
+    background: rgba(0,0,0,0.14) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+[data-testid="stColumn"]:has(#pn-close-marker) [data-testid="stButton"] > button:hover p {
+    color: #111 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+    _, col, _ = st.columns([1, 3, 1])
+    with col:
+        st.markdown('<span id="pn-modal-marker" hidden aria-hidden="true"></span>',
+                    unsafe_allow_html=True)
+
+        st.markdown(
+            '<div style="font-family:\'poppins\',sans-serif;font-weight:600;'
+            'font-size:1.2rem;color:var(--text-primary);line-height:1.3;'
+            'padding-right:44px;margin-bottom:8px;">Privacy Notice</div>',
+            unsafe_allow_html=True,
+        )
+        (close_col,) = st.columns([1])
+        with close_col:
+            st.markdown('<span id="pn-close-marker" hidden aria-hidden="true"></span>',
+                        unsafe_allow_html=True)
+            if st.button("✕", key="close_pn_modal"):
+                st.session_state.show_modal = None
+                st.rerun()
+
+        st.markdown(_PRIVACY_NOTICE)
+
+
+def _show_data_settings_modal():
+    """Renders the data settings as a fixed modal overlay (session-state driven)."""
+    st.markdown("""
+<style>
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(15,15,20,0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1099;
+    pointer-events: all;
+}
+[data-testid="stHorizontalBlock"]:has(#ds-modal-marker) {
+    height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+[data-testid="stColumn"]:has(#ds-modal-marker) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1100 !important;
+    width: min(460px, 92vw) !important;
+    max-height: 80vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;
+    padding: 28px 32px 24px !important;
+    pointer-events: all !important;
+}
+[data-testid="stColumn"]:has(#ds-modal-marker) > div {
+    background: #FFFFFF !important;
+}
+[data-testid="stColumn"]:has(#ds-modal-marker) [data-testid="stColumn"]:has(#pn-link-ds-marker) [data-testid="stButton"] > button {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: unset !important;
+    width: auto !important;
+    margin-top: 0 !important;
+}
+[data-testid="stColumn"]:has(#ds-modal-marker) [data-testid="stColumn"]:has(#pn-link-ds-marker) [data-testid="stButton"] > button p {
+    color: var(--text-muted) !important;
+    font-family: 'figtree', sans-serif !important;
+    font-size: 0.78rem !important;
+    text-decoration: underline !important;
+    margin: 0 !important;
+}
+[data-testid="stColumn"]:has(#ds-modal-marker) [data-testid="stColumn"]:has(#pn-link-ds-marker) [data-testid="stButton"] > button:hover {
+    background: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+[data-testid="stColumn"]:has(#ds-modal-marker) [data-testid="stColumn"]:has(#pn-link-ds-marker) [data-testid="stButton"] > button:hover p {
+    color: var(--orange) !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
     _, col, _ = st.columns([1, 2, 1])
     with col:
+        st.markdown('<span id="ds-modal-marker" hidden aria-hidden="true"></span>',
+                    unsafe_allow_html=True)
 
-        # ── Screen 1: Before You Upload ──────────────────────────────────────
-        if step == 1:
-            st.markdown("""
-<div class="consent-card">
-  <div class="consent-step">Step 1 of 4</div>
-  <div class="consent-title">Before you upload your results</div>
-  <div class="consent-body">
-    We want to be clear about how your data is used.
-    <ul style="margin:12px 0 0 16px;padding:0;line-height:2;">
-      <li>This app helps you understand your health data</li>
-      <li>It does not provide medical advice</li>
-      <li>Uploading results does not create a clinical relationship with Vital Flow Health</li>
-    </ul>
-    <br>You'll be able to choose how your data is used on the next screen.
+        st.markdown("""
+<div style="margin-bottom:20px;">
+  <div style="font-family:'poppins',sans-serif;font-weight:600;font-size:1.2rem;
+              color:var(--text-primary);margin:0 0 10px;">Privacy Settings</div>
+  <div style="font-family:'figtree',sans-serif;font-size:0.88rem;color:var(--text-secondary);
+              line-height:1.65;">
+    Manage how your data is used. <em>Improve our service</em> is required and cannot be disabled.
   </div>
 </div>
 """, unsafe_allow_html=True)
-            st.markdown("")
-            if st.button("Continue →", key="c1", use_container_width=True):
-                st.session_state.consent_step = 2
+
+        new_research = st.toggle(
+            "Contribute to health research",
+            value=st.session_state.consent_research,
+            key="ds_research",
+        )
+        new_insights = st.toggle(
+            "Help build future health insights products",
+            value=st.session_state.consent_insights,
+            key="ds_insights",
+        )
+
+        st.markdown(
+            '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border-subtle);"></div>',
+            unsafe_allow_html=True,
+        )
+        (link_col,) = st.columns([1])
+        with link_col:
+            st.markdown('<span id="pn-link-ds-marker" hidden aria-hidden="true"></span>',
+                        unsafe_allow_html=True)
+            if st.button("Read our Privacy Notice", key="open_pn_from_ds"):
+                st.session_state.show_modal = "privacy_notice"
                 st.rerun()
 
-        # ── Screen 2: Your Data, Your Choice ─────────────────────────────────
-        elif step == 2:
-            st.markdown("""
-<div class="consent-card">
-  <div class="consent-step">Step 2 of 4</div>
-  <div class="consent-title">Your data, your choice</div>
-  <div class="consent-body">We use your data in a few different ways. Please choose what you're comfortable with.</div>
-</div>
-""", unsafe_allow_html=True)
-
-            st.markdown("")
-
-            # Toggle 1 — locked on
-            st.markdown("""
-<div class="consent-toggle-row">
-  <div class="consent-toggle-label">✅ &nbsp;Improve our service</div>
-  <div class="consent-toggle-desc">We use your data to improve our health checks and compare results against anonymised reference data.</div>
-  <div class="consent-toggle-locked">Required — this cannot be turned off</div>
-</div>
-""", unsafe_allow_html=True)
-
-            # Toggle 2 — optional
-            st.markdown("""
-<div class="consent-toggle-row">
-  <div class="consent-toggle-label">Contribute to health research</div>
-  <div class="consent-toggle-desc">Your data can be used in anonymous, grouped form to identify health trends. You will never be personally identified.</div>
-</div>
-""", unsafe_allow_html=True)
-            research = st.checkbox(
-                "I consent to contributing to health research",
-                value=st.session_state.consent_research,
-                key="toggle_research",
-            )
-
-            # Toggle 3 — optional, visually separated
-            st.markdown("<div style='margin-top:6px'>", unsafe_allow_html=True)
-            st.markdown("""
-<div class="consent-toggle-row">
-  <div class="consent-toggle-label">Help build future health insights products</div>
-  <div class="consent-toggle-desc">Your anonymous data may be used to develop future paid health insight tools. Your identity will never be shared.</div>
-</div>
-""", unsafe_allow_html=True)
-            insights = st.checkbox(
-                "I consent to helping build future health insights products",
-                value=st.session_state.consent_insights,
-                key="toggle_insights",
-            )
-            st.markdown("</div>", unsafe_allow_html=True)
-
-            st.markdown("""
-<div class="consent-footer">You can change these choices at any time via the data settings link at the bottom of the page.</div>
-""", unsafe_allow_html=True)
-            st.markdown("")
-
-            if st.button("Continue →", key="c2", use_container_width=True):
-                st.session_state.consent_research = research
-                st.session_state.consent_insights = insights
-                st.session_state.consent_step = 3
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            if st.button("Save preferences", key="save_ds_modal",
+                         use_container_width=True, type="primary"):
+                st.session_state.consent_research = new_research
+                st.session_state.consent_insights = new_insights
+                st.session_state.show_modal = None
+                st.rerun()
+        with c2:
+            if st.button("Cancel", key="close_ds_modal", use_container_width=True):
+                st.session_state.show_modal = None
                 st.rerun()
 
-        # ── Screen 3: Important Information ──────────────────────────────────
-        elif step == 3:
+
+def _show_consent_flow():
+    """Renders the consent flow as a single-screen modal overlay."""
+
+    # ── Modal overlay + toggle row CSS ──────────────────────────────────────
+    # body::before creates a blurred backdrop. The consent center column is
+    # identified by #consent-col-marker and lifted to a fixed position via :has().
+    # Toggle rows (stHorizontalBlock inside the center column) get card styling
+    # with symmetric 40px horizontal inset matching the header card padding.
+    st.markdown("""
+<style>
+/* ── Backdrop ── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 20, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 999;
+    pointer-events: all;
+}
+/* ── Collapse the outer layout row so app fills the viewport behind the modal ── */
+[data-testid="stHorizontalBlock"]:has(#consent-col-marker) {
+    height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* ── Float the consent center column as a fixed modal ── */
+[data-testid="stColumn"]:has(#consent-col-marker) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1000 !important;
+    width: min(560px, 92vw) !important;
+    max-height: 88vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;
+    padding: 0 !important;
+    pointer-events: all !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) > div {
+    background: #FFFFFF !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) .consent-card {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* ── Toggle row card container ──
+   width: calc(100% - 80px) + margin-left: 40px gives symmetric 40px insets.
+   margin-right is intentionally omitted — the width calc handles the right side,
+   since Streamlit sets an explicit width on stHorizontalBlock that would ignore
+   a margin-right offset.                                                        */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"] {
+    background: var(--bg-page) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-sm) !important;
+    align-items: center !important;
+    gap: 0 !important;
+    margin-bottom: 10px !important;
+    margin-left: 40px !important;
+    width: calc(100% - 80px) !important;
+    overflow: hidden !important;
+}
+/* ── Text column ── */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:first-child {
+    padding: 16px 8px 16px 16px !important;
+    box-sizing: border-box !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:first-child > div,
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:first-child [data-testid="stVerticalBlock"],
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"] {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"] p {
+    margin: 0 !important;
+}
+/* ── Toggle column: vertical centering ──
+   align-items:center on the row (stHorizontalBlock) centers each column within
+   the row height, so we just need to right-align and strip spacing here.
+   All intermediate wrappers (> div, stVerticalBlock, element-container) are made
+   flex so they pass the centering through without adding extra height.            */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:last-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+    gap: 0 !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:last-child > div,
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:last-child [data-testid="stVerticalBlock"],
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]
+    [data-testid="stColumn"]:last-child [data-testid="element-container"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+}
+/* ── Opacity: cancel Streamlit's disabled-widget fade ── */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"] * {
+    opacity: 1 !important;
+}
+/* ── Locked toggle: force track to orange, thumb to light grey ──
+   ToggleTrack (> div:first-child of the label container) gets orange.
+   ToggleThumb (sole child inside the track) gets a light grey — visible against
+   the orange but not white, so it reads as non-interactive.                      */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]:first-of-type
+    *:has(> input:checked:disabled) > div:first-child {
+    background-color: var(--orange) !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]:first-of-type
+    *:has(> input:checked:disabled) > div:first-child > div:first-child {
+    background-color: #e2e2e2 !important;
+}
+/* ── HR divider ── */
+[data-testid="stColumn"]:has(#consent-col-marker) hr {
+    margin: 20px 40px 14px !important;
+}
+/* ── Expander: same width-calc trick as toggle rows ── */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stExpander"] {
+    margin-left: 40px !important;
+    width: calc(100% - 80px) !important;
+}
+/* ── Button: target stButton directly (avoids fragile deep-child selectors);
+   bottom padding gives breathing room at the modal base              ── */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stButton"] {
+    padding: 0 40px 32px !important;
+    box-sizing: border-box !important;
+}
+/* ── "Read our full Privacy Notice" link-style button ── */
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stHorizontalBlock"]:has(#pn-link-consent-marker) {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin-left: 40px !important;
+    margin-bottom: 4px !important;
+    width: calc(100% - 80px) !important;
+    overflow: visible !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stColumn"]:has(#pn-link-consent-marker) [data-testid="stButton"] {
+    padding: 0 !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stColumn"]:has(#pn-link-consent-marker) [data-testid="stButton"] > button {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: unset !important;
+    width: auto !important;
+    margin-top: 0 !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stColumn"]:has(#pn-link-consent-marker) [data-testid="stButton"] > button p {
+    color: var(--text-muted) !important;
+    font-family: 'figtree', sans-serif !important;
+    font-size: 0.80rem !important;
+    text-decoration: underline !important;
+    margin: 0 !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stColumn"]:has(#pn-link-consent-marker) [data-testid="stButton"] > button:hover {
+    background: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+[data-testid="stColumn"]:has(#consent-col-marker) [data-testid="stColumn"]:has(#pn-link-consent-marker) [data-testid="stButton"] > button:hover p {
+    color: var(--orange) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        st.markdown('<span id="consent-col-marker" hidden aria-hidden="true"></span>',
+                    unsafe_allow_html=True)
+
+        # ── Header ──────────────────────────────────────────────────────────
+        st.markdown("""
+<div class="consent-card" style="padding-bottom:16px;">
+  <div class="consent-title">Before you upload your results</div>
+  <div class="consent-body">
+    This app helps you understand your health data. It does not provide medical advice,
+    and uploading results does not create a clinical relationship with Vital Flow Health.
+  </div>
+  <div style="font-family:'figtree',sans-serif;font-size:0.75rem;letter-spacing:0.6px;
+              text-transform:uppercase;color:var(--text-muted);font-weight:600;
+              padding-top:16px;border-top:1px solid var(--border-subtle);margin-bottom:10px;">
+    Your data choices
+  </div>
+  <div class="consent-body" style="margin-bottom:0;">
+    Choose how your data is used. You can update these at any time.
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+        st.markdown("")
+
+        # ── Toggle rows ──────────────────────────────────────────────────────
+        # Row 1 — locked (disabled=True keeps it non-interactive; opacity reset
+        # in CSS cancels Streamlit's ~40% disabled fade)
+        cl1, cl2 = st.columns([5, 1])
+        with cl1:
             st.markdown("""
-<div class="consent-card">
-  <div class="consent-step">Step 3 of 4</div>
-  <div class="consent-title">Important to know</div>
-  <div class="consent-body">By uploading your results, you confirm that:</div>
+<div class="consent-toggle-label">Improve our service</div>
+<div class="consent-toggle-desc">We use your data to improve our health checks and compare results against anonymised reference data.</div>
+<div class="consent-toggle-locked" style="margin-top:4px;">Required — this cannot be turned off</div>
+""", unsafe_allow_html=True)
+        with cl2:
+            st.toggle("Improve", value=True, disabled=True, key="toggle_improve", label_visibility="collapsed")
+
+        # Row 2 — research (optional)
+        c1, c2 = st.columns([5, 1])
+        with c1:
+            st.markdown("""
+<div class="consent-toggle-label">Contribute to health research</div>
+<div class="consent-toggle-desc">Your data can be used in anonymous, grouped form to identify health trends. You will never be personally identified.</div>
+""", unsafe_allow_html=True)
+        with c2:
+            research = st.toggle("Research", value=st.session_state.consent_research, key="toggle_research", label_visibility="collapsed")
+
+        st.markdown("<hr>", unsafe_allow_html=True)
+
+        # Row 3 — insights (optional)
+        c3, c4 = st.columns([5, 1])
+        with c3:
+            st.markdown("""
+<div class="consent-toggle-label">Help build future health insights products</div>
+<div class="consent-toggle-desc">Your anonymous data may be used to develop future paid health insight tools. Your identity will never be shared.</div>
+""", unsafe_allow_html=True)
+        with c4:
+            insights = st.toggle("Insights", value=st.session_state.consent_insights, key="toggle_insights", label_visibility="collapsed")
+
+        # ── Confirmations + footer ───────────────────────────────────────────
+        st.markdown("""
+<div style="margin:4px 40px 0;">
+  <div style="font-family:'poppins',sans-serif;font-size:0.83rem;font-weight:600;
+              color:var(--text-primary);padding-top:18px;
+              border-top:1px solid var(--border-subtle);margin-bottom:8px;">
+    By uploading your results, you confirm that:
+  </div>
   <div class="consent-checklist">
     ☑ &nbsp;The data you provide may not be independently verified<br>
     ☑ &nbsp;Results and insights are for information only<br>
     ☑ &nbsp;You should speak to a qualified healthcare professional for medical advice
   </div>
-</div>
-""", unsafe_allow_html=True)
-            st.markdown("")
-            if st.button("I understand →", key="c3", use_container_width=True):
-                st.session_state.consent_step = 4
-                st.rerun()
-
-        # ── Screen 4: Final Confirmation ──────────────────────────────────────
-        elif step == 4:
-            st.markdown("""
-<div class="consent-card">
-  <div class="consent-step">Step 4 of 4</div>
-  <div class="consent-title">Confirm and continue</div>
-  <div class="consent-body">
-    You're in control of your data. You can:
-    <ul style="margin:10px 0 0 16px;padding:0;line-height:2;">
-      <li>Withdraw consent at any time</li>
-      <li>Request deletion of your data</li>
-    </ul>
+  <div class="consent-footer">
+    You're in control of your data — you can withdraw consent or request deletion at any time.
+    Data choices can be updated via the settings link at the bottom of the page.
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-            with st.expander("Read our full Privacy Notice"):
-                st.markdown(_PRIVACY_NOTICE)
-
-            st.markdown("")
-            if st.button("Continue to the app →", key="c4", use_container_width=True):
-                st.session_state.consent_step = 5
-                st.session_state.consent_done = True
+        (link_col,) = st.columns([1])
+        with link_col:
+            st.markdown('<span id="pn-link-consent-marker" hidden aria-hidden="true"></span>',
+                        unsafe_allow_html=True)
+            if st.button("Read our full Privacy Notice", key="open_pn_from_consent"):
+                st.session_state.show_modal = "privacy_notice"
                 st.rerun()
 
-        # ── Screen 5: Success ─────────────────────────────────────────────────
-        elif step == 5:
-            st.markdown("""
-<div class="consent-card" style="text-align:center;">
-  <div class="consent-success-icon">✅</div>
-  <div class="consent-title" style="text-align:center;">You're all set</div>
-  <div class="consent-body" style="text-align:center;">
-    Your preferences have been saved.<br>
-    Remember: insights are informational and not a diagnosis.
-  </div>
-</div>
-""", unsafe_allow_html=True)
-            st.markdown("")
-            if st.button("Go to the app →", key="c5", use_container_width=True):
-                st.session_state.consent_step = 6   # past all screens
-                st.rerun()
-
-    st.stop()
+        st.markdown("")
+        if st.button("I agree, continue to the app →", key="c1", use_container_width=True):
+            st.session_state.consent_research = research
+            st.session_state.consent_insights = insights
+            st.session_state.consent_done = True
+            st.rerun()
 
 
 # Run consent flow until complete
-if not st.session_state.consent_done or st.session_state.consent_step <= 5:
+if not st.session_state.consent_done:
     _show_consent_flow()
 
 # ── Full-width header ──
@@ -1166,6 +1589,33 @@ sex = st.selectbox(
     placeholder="Select sex"
 )
 
+# ── Footer (fixed at bottom, always accessible before and after sex selection) ─
+_, _fc, _ = st.columns([3, 2, 3])
+with _fc:
+    st.markdown('<span id="footer-outer-marker" hidden aria-hidden="true"></span>',
+                unsafe_allow_html=True)
+    _fb1, _fsep, _fb2 = st.columns([2, 1, 2])
+    with _fb1:
+        if st.button("Privacy Settings", key="open_ds_modal"):
+            st.session_state.show_modal = "data_settings"
+            st.rerun()
+    with _fsep:
+        st.markdown(
+            '<p style="text-align:center;color:var(--border-medium);'
+            'font-size:0.80rem;margin:0;line-height:2;">·</p>',
+            unsafe_allow_html=True,
+        )
+    with _fb2:
+        if st.button("Privacy Notice", key="open_pn_modal"):
+            st.session_state.show_modal = "privacy_notice"
+            st.rerun()
+
+# ── Modals (session-state driven) ─────────────────────────────────────────────
+if st.session_state.show_modal == "privacy_notice":
+    _show_privacy_notice_modal()
+elif st.session_state.show_modal == "data_settings":
+    _show_data_settings_modal()
+
 if not sex:
     st.stop()
 
@@ -1181,7 +1631,7 @@ with col_input:
 
     uploaded_file = st.file_uploader(
         "If you have had a blood test with Vital Flow Health, upload your lab report to autofill the form.",
-        type=["pdf", "csv"]
+        type=["pdf"]
     )
     if uploaded_file is not None:
         if uploaded_file.name.lower().endswith(".pdf"):
@@ -1230,6 +1680,7 @@ with col_input:
                 "abnormal": abnormal_results,
                 "sex": sex,
             }
+            submit_results(results, sex)
 
 with col_results:
     interp = st.session_state.last_interp
