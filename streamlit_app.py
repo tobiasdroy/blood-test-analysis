@@ -208,6 +208,7 @@ st.markdown("""
 
     /* ── CTA button ── */
     [data-testid="stButton"] {
+        display: flex !important;
         width: 100% !important;
     }
     [data-testid="stButton"] > button {
@@ -1695,6 +1696,7 @@ with col_input:
                     results[metric] = {**meta, "value": value}
 
     st.divider()
+    interpret_clicked_top = st.button("Interpret Results", key="interpret_top")
 
     sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
 
@@ -1730,7 +1732,9 @@ with col_input:
             results[metric] = {**meta, "value": value}
 
     st.divider()
-    interpret_clicked = st.button("Interpret Results")
+    interpret_clicked_bottom = st.button("Interpret Results", key="interpret_bottom")
+
+    interpret_clicked = interpret_clicked_top or interpret_clicked_bottom
 
     if interpret_clicked:
         if not results:
