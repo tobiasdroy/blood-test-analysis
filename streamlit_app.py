@@ -207,6 +207,9 @@ st.markdown("""
     }
 
     /* ── CTA button ── */
+    [data-testid="stButton"] {
+        width: 100% !important;
+    }
     [data-testid="stButton"] > button {
         background: var(--orange) !important;
         color: #FFFFFF !important;
@@ -219,7 +222,7 @@ st.markdown("""
         width: 100% !important;
         letter-spacing: 0.2px !important;
         transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important;
-        margin-top: 8px !important;
+        margin-top: 0 !important;
     }
     [data-testid="stButton"] > button:hover {
         background: #FF7D38 !important;
@@ -298,19 +301,23 @@ st.markdown("""
     }
 
     /* ── Metric row ── */
+    .metric-row-col [data-testid="stColumn"]:first-child {
+        display: flex !important;
+        align-items: center !important;
+    }
     .metric-label {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        min-height: 2.5rem;
-        padding: 2px 0;
-        gap: 1px;
+        padding: 6px 0;
+        gap: 2px;
     }
     .metric-name-row {
         display: flex;
         align-items: center;
         font-family: 'figtree', sans-serif;
         font-size: 0.875rem;
+        font-weight: 500;
         color: var(--text-primary);
         line-height: 1.35;
         gap: 4px;
@@ -319,7 +326,7 @@ st.markdown("""
     .metric-unit {
         display: block;
         font-family: 'figtree', sans-serif;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: var(--text-muted);
         font-style: italic;
         line-height: 1.2;
@@ -1640,6 +1647,8 @@ elif st.session_state.show_modal == "data_settings":
 if not sex or age is None:
     st.stop()
 
+st.divider()
+
 results = {}
 upload = False
 
@@ -1648,10 +1657,16 @@ col_input, col_results = st.columns([1, 1], gap="large")
 
 with col_input:
     st.header("Enter your blood test results")
-    st.write("Input values only for the metrics you have tested, ensuring units match those shown.")
+    st.markdown(
+        "<p style='font-family:figtree,sans-serif;font-size:0.88rem;color:var(--text-secondary);"
+        "line-height:1.65;margin:0 0 16px;'>"
+        "Enter values only for the metrics you have results for. Make sure the units match those shown."
+        "</p>",
+        unsafe_allow_html=True,
+    )
 
     uploaded_file = st.file_uploader(
-        "If you have had a blood test with Vital Flow Health, upload your lab report to autofill the form.",
+        "Vital Flow Health patient? Upload your lab report PDF to autofill.",
         type=["pdf"]
     )
     if uploaded_file is not None:
@@ -1679,7 +1694,7 @@ with col_input:
                     meta = BLOOD_METRIC_DATA[metric]
                     results[metric] = {**meta, "value": value}
 
-    interpret_clicked = st.button("Interpret Results")
+    st.divider()
 
     sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
 
@@ -1690,7 +1705,7 @@ with col_input:
             "Search metrics",
             options=list(name_to_key.keys()),
             index=None,
-            placeholder="🔍  Search metrics…",
+            placeholder="Search metrics…",
             label_visibility="collapsed",
         )
 
@@ -1713,6 +1728,9 @@ with col_input:
             value = 0.0
         if value > 0:
             results[metric] = {**meta, "value": value}
+
+    st.divider()
+    interpret_clicked = st.button("Interpret Results")
 
     if interpret_clicked:
         if not results:
