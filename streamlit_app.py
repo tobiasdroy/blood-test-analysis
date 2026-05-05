@@ -164,6 +164,17 @@ st.markdown("""
         display: none !important;
     }
 
+    /* ── Metric search bar ── */
+    .st-key-metric_search input {
+        background: var(--bg-card) !important;
+        border: 1.5px solid var(--orange) !important;
+        border-radius: var(--radius-sm) !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .st-key-metric_search input:focus {
+        box-shadow: 0 0 0 3px var(--orange-dim) !important;
+    }
+
     /* ── Selectbox ── */
     [data-testid="stSelectbox"] > div > div {
         background: var(--bg-card) !important;
@@ -1673,7 +1684,37 @@ with col_input:
     interpret_clicked = st.button("Interpret Results")
 
     sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
-    input_blood_metrics(sorted_metrics, upload, results)
+
+    search_query = st.text_input(
+        "Search metrics",
+        placeholder="🔍  Search metrics…",
+        key="metric_search",
+        label_visibility="collapsed",
+    )
+
+    if search_query.strip():
+        q = search_query.strip().lower()
+        starts   = {k: v for k, v in sorted_metrics.items() if v['name'].lower().startswith(q)}
+        contains = {k: v for k, v in sorted_metrics.items() if q in v['name'].lower() and k not in starts}
+        display_metrics = {**starts, **contains}
+        if not display_metrics:
+            st.caption("No metrics match your search.")
+    else:
+        display_metrics = sorted_metrics
+
+    input_blood_metrics(display_metrics, upload, results)
+
+    # Collect values the user entered for metrics now hidden by the search filter
+    for metric, meta in sorted_metrics.items():
+        if metric in display_metrics or metric in results:
+            continue
+        raw = st.session_state.get(metric, "")
+        try:
+            value = float(raw) if raw else 0.0
+        except ValueError:
+            value = 0.0
+        if value > 0:
+            results[metric] = {**meta, "value": value}
 
     if interpret_clicked:
         if not results:
