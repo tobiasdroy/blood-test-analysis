@@ -207,10 +207,6 @@ st.markdown("""
     }
 
     /* ── CTA button ── */
-    [data-testid="stButton"] {
-        display: flex !important;
-        width: 100% !important;
-    }
     [data-testid="stButton"] > button {
         background: var(--orange) !important;
         color: #FFFFFF !important;
@@ -1597,7 +1593,7 @@ st.markdown(
     "<div class='disclaimer-box'>"
     "<strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute "
     "for professional medical advice, diagnosis, or treatment. Please consult a healthcare professional "
-    "if you have any medical concerns. Your data is private and not stored by Vital Flow Health for any purposes."
+    "if you have any medical concerns."
     "</div>",
     unsafe_allow_html=True
 )
@@ -1696,7 +1692,7 @@ with col_input:
                     results[metric] = {**meta, "value": value}
 
     st.divider()
-    interpret_clicked_top = st.button("Interpret Results", key="interpret_top")
+    interpret_clicked_top = st.button("Interpret Results", key="interpret_top", use_container_width=True)
 
     sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
 
@@ -1732,7 +1728,7 @@ with col_input:
             results[metric] = {**meta, "value": value}
 
     st.divider()
-    interpret_clicked_bottom = st.button("Interpret Results", key="interpret_bottom")
+    interpret_clicked_bottom = st.button("Interpret Results", key="interpret_bottom", use_container_width=True)
 
     interpret_clicked = interpret_clicked_top or interpret_clicked_bottom
 
