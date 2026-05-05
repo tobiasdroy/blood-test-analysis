@@ -160,6 +160,9 @@ st.markdown("""
     [data-testid="stTextInput"] input::placeholder {
         color: var(--text-muted) !important;
     }
+    [data-testid="InputInstructions"] {
+        display: none !important;
+    }
 
     /* ── Selectbox ── */
     [data-testid="stSelectbox"] > div > div {
@@ -1582,12 +1585,21 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-sex = st.selectbox(
-    label="Biological sex",
-    options=["Female", "Male"],
-    index=None,
-    placeholder="Select sex"
-)
+_dem_col1, _dem_col2 = st.columns([1, 1])
+with _dem_col1:
+    sex = st.selectbox(
+        label="Biological sex",
+        options=["Female", "Male"],
+        index=None,
+        placeholder="Select sex"
+    )
+with _dem_col2:
+    _age_str = st.text_input(label="Age", placeholder="Enter your age")
+    age = (
+        int(_age_str)
+        if _age_str and _age_str.strip().isdigit() and 1 <= int(_age_str) <= 120
+        else None
+    )
 
 # ── Footer (fixed at bottom, always accessible before and after sex selection) ─
 _, _fc, _ = st.columns([3, 2, 3])
@@ -1616,7 +1628,7 @@ if st.session_state.show_modal == "privacy_notice":
 elif st.session_state.show_modal == "data_settings":
     _show_data_settings_modal()
 
-if not sex:
+if not sex or age is None:
     st.stop()
 
 results = {}
@@ -1680,7 +1692,7 @@ with col_input:
                 "abnormal": abnormal_results,
                 "sex": sex,
             }
-            submit_results(results, sex)
+            submit_results(results, sex, age)
 
 with col_results:
     interp = st.session_state.last_interp

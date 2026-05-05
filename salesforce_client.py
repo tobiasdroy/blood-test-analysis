@@ -29,11 +29,12 @@ def _get_sf_client() -> Salesforce:
     return Salesforce(instance_url=token["instance_url"], session_id=token["access_token"])
 
 
-def _make_external_id(results: dict, sex: str) -> str:
-    """SHA-256 hash of results + sex + UTC date. Same submission same day → same ID."""
+def _make_external_id(results: dict, sex: str, age: int) -> str:
+    """SHA-256 hash of results + sex + age + UTC date. Same submission same day → same ID."""
     payload = {
         "results": {k: v.get("value") for k, v in sorted(results.items())},
         "sex": sex,
+        "age": age,
         "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:40]
@@ -43,13 +44,13 @@ def _do_upsert(sf: Salesforce, ext_id: str, record: dict) -> None:
     getattr(sf, _SF_OBJECT).upsert(f"External_ID__c/{ext_id}", record)
 
 
-def submit_results(results: dict, sex: str) -> bool:
+def submit_results(results: dict, sex: str, age: int) -> bool:
     """
     Upsert a blood test submission to Salesforce.
     Returns True on success, False if the call fails (app continues either way).
     Skips silently if the same results were already submitted this session.
     """
-    ext_id = _make_external_id(results, sex)
+    ext_id = _make_external_id(results, sex, age)
 
     # In-session deduplication: don't re-submit identical results twice in one session
     if st.session_state.get("sf_submitted_hash") == ext_id:
@@ -58,6 +59,7 @@ def submit_results(results: dict, sex: str) -> bool:
     record = {
         "Submission_Time__c": datetime.now(timezone.utc).isoformat(),
         "Sex__c": sex,
+        "Age__c": age,
         "Consent_Improve__c": st.session_state.get("consent_improve", True),
         "Consent_Research__c": st.session_state.get("consent_research", False),
         "Consent_Insights__c": st.session_state.get("consent_insights", False),
