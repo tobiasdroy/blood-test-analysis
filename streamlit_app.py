@@ -164,14 +164,12 @@ st.markdown("""
         display: none !important;
     }
 
-    /* ── Metric search bar ── */
-    .st-key-metric_search input {
-        background: var(--bg-card) !important;
+    /* ── Metric search selectbox ── */
+    .st-key-metric_search [data-testid="stSelectbox"] > div > div {
         border: 1.5px solid var(--orange) !important;
-        border-radius: var(--radius-sm) !important;
         margin-bottom: 0.75rem !important;
     }
-    .st-key-metric_search input:focus {
+    .st-key-metric_search [data-testid="stSelectbox"] > div > div:focus-within {
         box-shadow: 0 0 0 3px var(--orange-dim) !important;
     }
 
@@ -1685,20 +1683,20 @@ with col_input:
 
     sorted_metrics = dict(sorted(BLOOD_METRIC_DATA.items(), key=lambda x: x[1]['name'].lower()))
 
-    search_query = st.text_input(
-        "Search metrics",
-        placeholder="🔍  Search metrics…",
-        key="metric_search",
-        label_visibility="collapsed",
-    )
+    name_to_key = {v['name']: k for k, v in sorted_metrics.items()}
 
-    if search_query.strip():
-        q = search_query.strip().lower()
-        starts   = {k: v for k, v in sorted_metrics.items() if v['name'].lower().startswith(q)}
-        contains = {k: v for k, v in sorted_metrics.items() if q in v['name'].lower() and k not in starts}
-        display_metrics = {**starts, **contains}
-        if not display_metrics:
-            st.caption("No metrics match your search.")
+    with st.container(key="metric_search"):
+        selected_name = st.selectbox(
+            "Search metrics",
+            options=list(name_to_key.keys()),
+            index=None,
+            placeholder="🔍  Search metrics…",
+            label_visibility="collapsed",
+        )
+
+    if selected_name:
+        selected_key = name_to_key[selected_name]
+        display_metrics = {selected_key: sorted_metrics[selected_key]}
     else:
         display_metrics = sorted_metrics
 
