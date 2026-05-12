@@ -380,7 +380,47 @@ HEART_HEALTH = {
         "explanation": "Lipoprotein(a), often written as Lp(a), is a type of LDL-like particle with an extra protein (apolipoprotein(a)) attached. It's been linked to an increased risk of heart disease and stroke. What makes Lp(a) unusual is that your level is almost entirely determined by genetics, not by diet or lifestyle. It doesn't change much over your lifetime, so a single measurement is generally enough to know where you stand. Not everyone gets tested for Lp(a), so having this result gives your doctor an extra piece of the cardiovascular risk picture.",
         "advice_high": "An elevated Lp(a) is an inherited risk factor for cardiovascular disease, and because it's genetically determined, diet and exercise don't significantly change the level itself. However, this makes it all the more important to manage every other risk factor you can control: keeping LDL cholesterol low, maintaining a healthy blood pressure, not smoking, exercising regularly, and eating well. Discuss this result with your GP or a cardiologist, as they may want to take a more aggressive approach to managing your other lipid levels. Research into specific Lp(a)-lowering therapies is ongoing.",
         "advice_low": "A low Lp(a) is reassuring and means this particular genetic risk factor isn't contributing to your cardiovascular risk. No action is needed."
-    }
+    },
+    "apo_b_a1_ratio": {
+        "name": "Apolipoprotein B/A1 Ratio",
+        "type": "upper_bound",
+        "gender_specific": True,
+        "range": (0, 0.8, 0, 0.9),
+        "unit": "ratio",
+        "explanation": "The Apolipoprotein B/A1 ratio compares the amount of atherogenic (artery-damaging) ApoB particles against the cardioprotective ApoA1 particles. A lower ratio means relatively more protective HDL-associated particles compared to harmful ones, which is favourable. Many cardiologists consider this ratio one of the most informative single markers for cardiovascular risk, as it captures both sides of the equation simultaneously. The threshold differs slightly between men and women because women typically have higher ApoA1 levels.",
+        "advice_high": "A high ApoB/A1 ratio means you have more harmful lipoprotein particles relative to protective ones, which increases cardiovascular risk. The most effective actions are the same as for managing LDL and HDL individually: reduce saturated fat, eat more fibre and healthy fats (olive oil, oily fish, nuts), exercise regularly, quit smoking, and maintain a healthy weight. These changes tend to lower ApoB and raise ApoA1 simultaneously, improving the ratio from both ends. If your ratio remains elevated after lifestyle changes, your GP may consider medication.",
+        "advice_low": "A low ApoB/A1 ratio is a favourable finding, indicating a good balance between harmful and protective lipoproteins. Continue with the habits supporting this."
+    },
+    "non_hdl_cholesterol": {
+        "name": "Non-HDL Cholesterol",
+        "type": "upper_bound",
+        "gender_specific": False,
+        "range": (0, 3.36),
+        "unit": "mmol/L",
+        "explanation": "Non-HDL cholesterol is calculated by subtracting your HDL ('good') cholesterol from your total cholesterol. The result captures all the potentially atherogenic (artery-damaging) lipoproteins in a single number: LDL, VLDL, IDL, and lipoprotein(a). Some guidelines prefer it over LDL alone because it includes these other harmful particles. It's particularly useful when triglycerides are elevated, as high triglycerides can make LDL calculations less accurate.",
+        "advice_high": "Elevated non-HDL cholesterol means the combined burden of harmful lipoproteins in your blood is higher than ideal, raising cardiovascular risk. The approach is the same as for reducing LDL: cut saturated fat, increase fibre and omega-3 fats, exercise regularly, avoid smoking, and maintain a healthy weight. If other risk factors are present, your GP may discuss lipid-lowering medication.",
+        "advice_low": "A low non-HDL cholesterol is a positive finding, suggesting a low overall burden of atherogenic lipoproteins. Continue with healthy habits."
+    },
+    "vldl": {
+        "name": "VLDL Cholesterol",
+        "type": "upper_bound",
+        "gender_specific": False,
+        "range": (0, 1.65),
+        "unit": "mmol/L",
+        "explanation": "Very low-density lipoprotein (VLDL) is produced by the liver and carries triglycerides to tissues throughout the body. After delivering triglycerides, VLDL is converted into LDL. Elevated VLDL is closely linked to high triglycerides, and high levels contribute to the build-up of plaques in artery walls. VLDL is usually calculated rather than directly measured, often estimated as approximately one-fifth of your triglyceride level.",
+        "advice_high": "High VLDL reflects excess triglycerides being transported in your blood, which is associated with cardiovascular risk and often with metabolic syndrome. The same lifestyle changes that lower triglycerides will reduce VLDL: cutting sugar and refined carbohydrates, reducing alcohol, eating more omega-3 fats from oily fish, exercising regularly, and losing excess weight. If levels remain elevated, your GP may consider medication.",
+        "advice_low": "A low VLDL is a positive finding and indicates that triglyceride transport in the blood is within a healthy range. No action needed."
+    },
+    "homocysteine": {
+        "name": "Homocysteine",
+        "type": "upper_bound",
+        "gender_specific": False,
+        "range": (0, 10),
+        "unit": "µmol/L",
+        "explanation": "Homocysteine is an amino acid produced naturally during the metabolism of another amino acid, methionine, which comes from dietary protein. Normally, B vitamins (particularly B6, B12, and folate) recycle homocysteine back into useful compounds. When these B vitamins are insufficient, or in certain genetic conditions, homocysteine accumulates in the blood. Elevated homocysteine is linked to increased cardiovascular risk, as well as to cognitive decline and bone health. It's both a nutritional and a cardiovascular risk marker.",
+        "advice_high": "Elevated homocysteine is most commonly caused by low levels of folate, vitamin B12, or vitamin B6. The first step is to increase your intake of these vitamins through diet (dark leafy greens, legumes, whole grains, meat, fish, eggs, dairy) or targeted supplementation. Your GP may check your B vitamin levels alongside this result. If supplementation doesn't bring levels down, further investigation into absorption, genetic factors (such as the MTHFR gene variant), or other causes may be warranted. Staying active, not smoking, and limiting alcohol also help keep homocysteine in check.",
+        "advice_low": "A low homocysteine level is reassuring and suggests your B vitamin status is adequate and this particular cardiovascular risk marker is not elevated. No action needed."
+    },
 }
 
 DIABETES_MARKERS = {
@@ -403,7 +443,17 @@ DIABETES_MARKERS = {
         "explanation": "Blood glucose is the amount of sugar currently circulating in your blood. It's your body's primary source of quick energy, derived from the carbohydrates you eat. After a meal, glucose rises as food is digested, then falls as insulin (a hormone from the pancreas) helps move it into cells for energy. A fasting glucose test is taken after you haven't eaten for 8-12 hours, giving a baseline reading. A non-fasting test will naturally be higher and is interpreted differently.",
         "advice_high": "Elevated blood glucose can indicate prediabetes or diabetes, but a single raised reading doesn't confirm a diagnosis, especially if you weren't fasting or were feeling unwell at the time. Your GP may want to repeat the test or check your HbA1c for a longer-term picture. In the meantime, reducing sugar and refined carbohydrates, eating more fibre-rich whole foods, staying physically active, and maintaining a healthy weight are the most effective ways to bring blood sugar under control. Even small changes (swapping sugary drinks for water, taking a walk after meals) can have a measurable effect.",
         "advice_low": "Low blood glucose (hypoglycaemia) can cause shakiness, sweating, dizziness, irritability, and difficulty concentrating. It's most common in people taking diabetes medication, but can also occur after prolonged fasting, intense exercise, or heavy alcohol consumption on an empty stomach. If you experience these symptoms, eating or drinking something sugary (a glass of juice, glucose tablets) should help quickly. If low readings are a recurring pattern, speak with your GP to investigate further."
-    }
+    },
+    "insulin": {
+        "name": "Insulin (Fasting)",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (2.6, 24.9),
+        "unit": "mIU/L",
+        "explanation": "Insulin is a hormone produced by the beta cells of the pancreas that acts as the key that unlocks your cells to allow glucose to enter and be used for energy. Fasting insulin (measured after at least 8-12 hours without food) reflects how much insulin your body needs to maintain normal blood sugar when no food is being digested. Persistently high fasting insulin is often a sign of insulin resistance, a state where cells don't respond well to insulin and the pancreas has to work harder to compensate. This is an early precursor to type 2 diabetes and is associated with weight gain, particularly around the abdomen.",
+        "advice_high": "Elevated fasting insulin suggests your cells may be resistant to insulin's effects, meaning your pancreas is producing more than usual to keep blood sugar under control. This is strongly associated with excess body weight (especially abdominal fat), a sedentary lifestyle, and a diet high in refined carbohydrates and sugar. The most effective interventions are reducing refined carbohydrates and sugary foods, increasing fibre, exercising regularly (both aerobic and resistance training are helpful), losing excess weight, and improving sleep quality. Even moderate weight loss of 5-10% of body weight can significantly improve insulin sensitivity. Your GP may want to check your HbA1c and fasting glucose alongside this result.",
+        "advice_low": "A low fasting insulin level reflects good insulin sensitivity, meaning your cells respond well to insulin and your pancreas doesn't need to produce large amounts. This is generally a positive finding. Very low insulin, particularly alongside high blood glucose, could indicate type 1 diabetes or advanced pancreatic disease, but this would typically be identified through other results."
+    },
 }
 
 IRON_STATUS = {
@@ -446,7 +496,27 @@ IRON_STATUS = {
         "explanation": "Uric acid is a waste product your body creates when it breaks down purines, which are natural substances found in your cells and in certain foods (especially organ meats, red meat, shellfish, and beer). Normally, uric acid dissolves in the blood, passes through the kidneys, and leaves the body in urine. Problems arise when the body produces too much or the kidneys don't excrete enough, causing levels to build up.",
         "advice_high": "Elevated uric acid (hyperuricaemia) increases the risk of gout, a painful form of arthritis caused by uric acid crystals forming in joints (often the big toe). It's also associated with kidney stones and may contribute to cardiovascular risk. To lower uric acid: reduce purine-rich foods (organ meats, game, shellfish, anchovies), limit alcohol (especially beer and spirits), cut back on sugary drinks containing fructose, drink plenty of water (at least 2 litres a day), and maintain a healthy weight. If you've had gout attacks or kidney stones, your GP may prescribe medication to lower uric acid levels.",
         "advice_low": "Low uric acid is uncommon and usually not a concern. It can occasionally be seen with certain genetic conditions, liver disease, or very high fluid intake. If your other results are normal and you feel well, no action is needed."
-    }
+    },
+    "iron_binding_capacity": {
+        "name": "Total Iron Binding Capacity (TIBC)",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (45, 81),
+        "unit": "µmol/L",
+        "explanation": "TIBC measures the total capacity of your blood to bind and transport iron using transferrin, the main iron-carrying protein. When iron stores are low, the liver produces more transferrin, raising the TIBC. When iron stores are plentiful, less transferrin is made, lowering TIBC. Think of it as the size of the transport fleet: a bigger fleet (high TIBC) means the body is trying harder to capture what little iron is available. TIBC is most useful when interpreted alongside serum iron and ferritin to build a complete picture of your iron status.",
+        "advice_high": "A high TIBC usually indicates that your iron stores are depleted and your body is producing extra transferrin to maximise iron capture. This pattern is typical of iron deficiency. Focus on iron-rich foods (red meat, lentils, dark leafy greens, fortified cereals), pair them with vitamin C to improve absorption, and avoid tea and coffee with meals. Your GP will likely recommend iron supplements if dietary changes are insufficient, and may want to investigate the cause of the deficiency.",
+        "advice_low": "Low TIBC can occur when iron stores are high (the body produces less transferrin when it doesn't need more iron), in chronic inflammation, liver disease, or malnutrition. Your GP will interpret this alongside your ferritin and serum iron to determine the underlying cause."
+    },
+    "transferrin_saturation": {
+        "name": "Transferrin Saturation",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (20, 50),
+        "unit": "%",
+        "explanation": "Transferrin saturation tells you what percentage of your available transferrin (iron transport protein) is actually loaded with iron. If serum iron is the amount of iron in transit and TIBC is the total transport capacity, transferrin saturation is the percentage of that capacity that's currently being used. A low saturation means plenty of empty transport proteins, suggesting iron is scarce. A high saturation means most of the transport protein is already carrying iron, which can indicate iron overload.",
+        "advice_high": "A high transferrin saturation means a large proportion of your iron transport capacity is occupied, suggesting more iron is circulating than usual. When combined with high ferritin, this pattern raises concern for iron overload conditions such as haemochromatosis, a common inherited condition where the gut absorbs too much iron from food. Your GP may want to check the full iron panel and consider genetic testing for haemochromatosis. If you are taking iron supplements, they may recommend stopping them. Reducing red meat and alcohol can also help manage iron levels while investigations are underway.",
+        "advice_low": "A low transferrin saturation, particularly when accompanied by low ferritin and high TIBC, is a classic sign of iron deficiency. This often precedes the development of anaemia. Increasing dietary iron and potentially taking supplements (under GP guidance) will help replenish stores. Eating vitamin C alongside iron-rich foods significantly improves absorption."
+    },
 }
 
 BONE_PROFILE = {
@@ -459,6 +529,16 @@ BONE_PROFILE = {
         "explanation": "Vitamin D is essential for absorbing calcium, building and maintaining strong bones, and supporting immune function and muscle health. Your body produces it when sunlight hits your skin, and you can also get it from foods like oily fish, egg yolks, and fortified products. In the UK and similar latitudes, vitamin D deficiency is very common, especially between October and March when sunlight isn't strong enough for your skin to make it. People with darker skin, those who spend limited time outdoors, and older adults are at higher risk of deficiency.",
         "advice_high": "Very high vitamin D levels (usually from taking high-dose supplements over a long period) can cause the body to absorb too much calcium, leading to nausea, kidney problems, and in extreme cases, calcium deposits in the heart and blood vessels. If you're taking vitamin D supplements, check the dose and speak with your GP about whether you need to reduce or stop them. Vitamin D toxicity doesn't happen from sun exposure or food alone.",
         "advice_low": "Low vitamin D is extremely common and very treatable. In the UK, Public Health England recommends that everyone consider taking a daily supplement of 10 micrograms (400 IU) during autumn and winter, and some people (those with limited sun exposure, darker skin, or who are housebound) should supplement year-round. Your GP may recommend a higher loading dose to bring levels up more quickly if you're significantly deficient. Eating oily fish, eggs, and fortified foods also contributes, though it's difficult to get enough from diet alone. Spending time outdoors in sunlight (with sensible sun protection) during spring and summer helps your body build up its stores."
+    },
+    "calcium": {
+        "name": "Calcium",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (2.20, 2.60),
+        "unit": "mmol/L",
+        "explanation": "Calcium is the most abundant mineral in the body, making up around 99% of your bones and teeth. The remaining 1% circulates in your blood and plays critical roles in muscle contraction, nerve signalling, blood clotting, and heart rhythm. Your body tightly regulates blood calcium levels through a system involving parathyroid hormone (PTH), vitamin D, and the kidneys. Because of this tight regulation, blood calcium can remain normal even when bone calcium stores are depleting, which is why bone density scans are sometimes needed alongside blood tests.",
+        "advice_high": "Elevated blood calcium (hypercalcaemia) most commonly results from overactive parathyroid glands (primary hyperparathyroidism) or, less commonly, from certain cancers that release calcium from bones. Other causes include vitamin D toxicity from excess supplementation, sarcoidosis, or prolonged immobility. Mild hypercalcaemia may cause fatigue, constipation, increased thirst, and muscle weakness. Your GP will want to check your parathyroid hormone level and may arrange further investigations. Staying well hydrated is important as calcium can affect kidney function.",
+        "advice_low": "Low calcium (hypocalcaemia) can cause muscle cramps, tingling or numbness in the hands and feet, muscle spasms, and in severe cases, problems with heart rhythm. Common causes include vitamin D deficiency (which impairs calcium absorption), underactive parathyroid glands, low magnesium, or kidney problems. Your GP will likely check your vitamin D and PTH levels alongside this result. Ensuring adequate vitamin D intake and eating calcium-rich foods (dairy, fortified plant milks, leafy greens, almonds, tinned fish with bones) are the first practical steps."
     },
 }
 
@@ -535,7 +615,27 @@ LIVER_FUNCTION = {
         "explanation": "GGT is an enzyme found mainly in the liver and bile ducts. It's one of the most sensitive markers of liver and bile duct problems, and it's particularly responsive to alcohol use. Doctors often use GGT alongside ALP to determine whether an elevated ALP is coming from the liver or from the bones: if GGT is also raised, the liver is the likely source. GGT is sometimes informally considered a marker of alcohol consumption, though it can be elevated by other things too.",
         "advice_high": "The most common cause of elevated GGT is alcohol use, even at levels that might not seem excessive. Other causes include fatty liver disease, certain medications (including some commonly used drugs like antiepileptics and some antibiotics), bile duct obstruction, and chronic liver conditions. If you drink alcohol, reducing or stopping intake is often the single most effective way to bring GGT down, and levels typically improve within weeks. If you don't drink, your GP will look at other liver markers and may arrange an ultrasound to investigate further. Maintaining a healthy weight and reviewing medications you're taking are also worthwhile steps.",
         "advice_low": "A low GGT is not a clinical concern and suggests your liver and bile ducts are functioning well. No action needed."
-    }
+    },
+    "total_protein": {
+        "name": "Total Protein",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (60, 80),
+        "unit": "g/L",
+        "explanation": "Total protein measures the combined amount of all proteins in your blood plasma, primarily albumin and globulins. Proteins serve countless functions: transporting substances around the body, fighting infections (antibodies are globulins), clotting blood, maintaining fluid balance, and acting as enzymes and hormones. Total protein is a broad indicator of nutritional status and liver and kidney health. It's usually interpreted alongside albumin, and the difference between the two gives a globulin value.",
+        "advice_high": "Elevated total protein can occur with dehydration (making all blood components more concentrated) or when the body produces excess immunoglobulins, as happens in some inflammatory conditions, chronic infections, or conditions like multiple myeloma. Your GP will look at this alongside your albumin to calculate your globulin level, and may arrange protein electrophoresis (a test that separates the different protein types) if a specific protein abnormality is suspected.",
+        "advice_low": "Low total protein can result from inadequate protein intake (malnutrition), conditions causing protein loss (kidney disease, protein-losing enteropathy), liver disease (which impairs protein synthesis), or excessive fluid retention diluting protein concentrations. Make sure your diet includes adequate protein from varied sources, and mention this result to your GP so they can investigate alongside your other liver, kidney, and nutritional markers."
+    },
+    "globulin": {
+        "name": "Globulin",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (18, 36),
+        "unit": "g/L",
+        "explanation": "Globulins are a group of proteins in your blood that includes many important immune and transport proteins. They're typically calculated by subtracting albumin from total protein. The main types are alpha globulins (acute-phase proteins that rise during inflammation), beta globulins (lipid transport proteins), and gamma globulins (immunoglobulins or antibodies). An abnormally high or low globulin level can point to immune system disorders, chronic infections, liver disease, or inflammatory conditions.",
+        "advice_high": "Elevated globulins can indicate chronic inflammation, ongoing infection, autoimmune disease, or in some cases a blood disorder affecting immunoglobulin production (such as multiple myeloma or other plasma cell conditions). Your GP may arrange further tests including protein electrophoresis to determine which fraction is elevated and why. The appropriate action depends entirely on the underlying cause.",
+        "advice_low": "Low globulins can occur with immune deficiency conditions, certain liver diseases, or protein loss through the kidneys or gut. Immune deficiency can increase susceptibility to infections. Your GP will look at this result alongside your albumin, total protein, and other markers to assess what's driving the low level."
+    },
 }
 
 URINE_ANALYSIS = {
@@ -618,7 +718,17 @@ URINE_ANALYSIS = {
         "explanation": "This measures the number of bacteria present in your urine sample. Healthy urine is normally sterile (free of bacteria), so the presence of significant numbers of bacteria usually indicates an infection in the urinary tract. However, some contamination can occur during sample collection (especially if the sample wasn't a 'clean catch' midstream sample), so a small number of bacteria doesn't always mean infection.",
         "advice_high": "A significant bacterial count in your urine strongly suggests a urinary tract infection (UTI), especially if white blood cells are also present and you have symptoms such as burning or pain when urinating, frequent urination, urgency, lower abdominal pain, or cloudy and strong-smelling urine. Contact your GP, who may prescribe antibiotics based on the type of bacteria found. Drink plenty of water to help flush bacteria from your system. If this is a recurrent problem, your GP can discuss prevention strategies and may want to investigate whether there's an underlying cause. If you have no symptoms, your doctor may want to repeat the test to rule out contamination before starting treatment.",
         "advice_low": "Absence of bacteria in your urine is the expected, normal finding. It confirms there's no urinary tract infection." 
-    }
+    },
+    "urine_culture": {
+        "name": "Urine Culture and Sensitivities",
+        "type": "presence",
+        "gender_specific": False,
+        "range": (0, 0),
+        "unit": "",
+        "explanation": "A urine culture is a laboratory test where a urine sample is placed on a growth medium and incubated to see whether bacteria grow, and if so, which species are present. It's more specific than a dipstick test and can confirm the exact organism causing a urinary tract infection. The sensitivity part of the test determines which antibiotics will kill the identified bacteria, guiding treatment choices. This ensures you're given the most effective antibiotic rather than a broad-spectrum guess.",
+        "advice_high": "A positive urine culture means bacteria were detected in your sample, confirming a urinary tract infection. The sensitivity results tell your GP which antibiotic to prescribe, making treatment more targeted and effective. Complete the full course of antibiotics even if your symptoms improve quickly. Drink plenty of water to help flush your urinary tract. If you suffer from recurrent UTIs, your GP may want to investigate contributing factors (such as anatomy, kidney stones, or immune function) and may consider a longer preventive antibiotic course or other strategies.",
+        "advice_low": "A negative culture means no significant bacterial growth was detected, indicating no active urinary tract infection. If you had symptoms, these may have another cause, or the infection may have been resolving at the time of sampling. Discuss any persistent symptoms with your GP."
+    },
 }
 
 THYROID_FUNCTION = {
@@ -651,7 +761,27 @@ THYROID_FUNCTION = {
         "explanation": "Free triiodothyronine (FT3) is the most active form of thyroid hormone. Most FT3 is actually produced by converting FT4 in your tissues (liver, kidneys, and elsewhere) rather than being released directly by the thyroid gland. It's roughly three to four times more potent than FT4 at influencing your metabolism, heart rate, temperature regulation, and energy levels. FT3 is sometimes the last thyroid marker to become abnormal, so it adds useful information when FT4 or TSH is borderline.",
         "advice_high": "High FT3 supports a diagnosis of hyperthyroidism (overactive thyroid), especially if TSH is low and FT4 is also elevated. In some cases, FT3 can be high while FT4 is normal, a pattern called T3 thyrotoxicosis, which is more common in early or mild hyperthyroidism and in certain thyroid nodule conditions. Symptoms are the same as for high FT4: weight loss, rapid heartbeat, anxiety, tremor, and heat intolerance. Your GP will interpret this alongside your other thyroid results and may refer you to an endocrinologist for further assessment and treatment.",
         "advice_low": "Low FT3 can indicate hypothyroidism, but it can also drop in response to non-thyroid illness, stress, poor nutrition, or calorie restriction (sometimes called 'sick euthyroid syndrome' or 'low T3 syndrome'). In these cases, the body is reducing metabolic activity as a protective response, and levels typically recover once you're well again. If FT3 is low alongside an abnormal TSH, your GP will manage it as part of thyroid treatment. If your TSH is normal but FT3 is low, focus on eating well, resting, and recovering from any illness. Mention the result to your GP for a follow-up check."    
-    }
+    },
+    "tpo_antibodies": {
+        "name": "Thyroid Peroxidase Antibodies (TPOAb)",
+        "type": "upper_bound",
+        "gender_specific": False,
+        "range": (0, 35),
+        "unit": "IU/mL",
+        "explanation": "Thyroid peroxidase antibodies (TPOAb) are antibodies produced by the immune system that mistakenly target thyroid peroxidase, an enzyme essential for making thyroid hormones. Their presence indicates that the immune system is attacking the thyroid gland, which is the hallmark of autoimmune thyroid conditions, most commonly Hashimoto's thyroiditis (which tends to cause an underactive thyroid) and sometimes Graves' disease (which causes an overactive thyroid). TPOAb can be present for years before thyroid function is affected.",
+        "advice_high": "Elevated TPO antibodies confirm autoimmune activity against your thyroid. This doesn't necessarily mean your thyroid function is abnormal right now, but it does mean you're at higher risk of developing thyroid dysfunction in the future, particularly hypothyroidism. Your GP will monitor your TSH and FT4 over time, often annually, to catch any changes early. Currently, there's no treatment specifically to reduce the antibodies themselves, but managing general health factors (adequate selenium intake, vitamin D sufficiency, and a balanced diet) may support thyroid health. If your thyroid function is already abnormal, that will be treated on its own merits.",
+        "advice_low": "A result below the reference threshold suggests autoimmune thyroid antibodies are not detectable at a clinically significant level. No action is needed based on this result alone."
+    },
+    "thyroglobulin_antibody": {
+        "name": "Thyroglobulin Antibody (TgAb)",
+        "type": "upper_bound",
+        "gender_specific": False,
+        "range": (0, 115),
+        "unit": "IU/mL",
+        "explanation": "Thyroglobulin antibodies (TgAb) target thyroglobulin, a protein made by the thyroid that serves as a precursor to thyroid hormones. Like TPO antibodies, elevated TgAb indicate autoimmune activity against the thyroid and are associated with Hashimoto's thyroiditis and other autoimmune thyroid conditions. TgAb are also important in monitoring people who have had thyroid cancer treatment, as they can interfere with the measurement of thyroglobulin (used to check for cancer recurrence).",
+        "advice_high": "Elevated thyroglobulin antibodies point to autoimmune activity against the thyroid. This is often seen alongside elevated TPO antibodies in Hashimoto's thyroiditis. Your GP will monitor your thyroid function (TSH and FT4) over time to check whether the gland remains working normally. If you've been treated for thyroid cancer, the presence of these antibodies is particularly significant as it can affect the interpretation of thyroglobulin tumour marker measurements and should be discussed with your specialist.",
+        "advice_low": "Thyroglobulin antibodies are not detectable at a clinically significant level. No specific action is required based on this finding alone."
+    },
 }
 
 CANCER_MARKERS = {
@@ -697,7 +827,250 @@ VITAMINS = {
         "explanation": "Folate (vitamin B9) is essential for making and repairing DNA, producing red blood cells, and supporting the rapid cell division that occurs during growth and pregnancy. Your body doesn't store large amounts of folate, so you need a regular dietary supply. Good sources include dark leafy greens (spinach, kale, broccoli), legumes (lentils, chickpeas, beans), oranges, fortified cereals, and liver. Folate is particularly important during pregnancy because deficiency in early pregnancy increases the risk of neural tube defects in the developing baby.",
         "advice_high": "High folate levels from food or supplements are generally not harmful, as excess is excreted in urine. Very high levels are occasionally seen in people taking high-dose supplements. One thing to be aware of is that high folate intake can mask the blood signs of vitamin B12 deficiency (by correcting the anaemia while allowing neurological damage to progress), so if your folate is high, it's worth making sure your B12 level is adequate too.",
         "advice_low": "Low folate can cause a type of anaemia where red blood cells become abnormally large (megaloblastic anaemia), leading to tiredness, weakness, and shortness of breath. It can also cause mouth ulcers, a sore tongue, and mood changes. Increasing folate-rich foods in your diet is the first step: leafy greens, legumes, citrus fruits, and fortified cereals are all good sources. Your GP may recommend a folic acid supplement, especially if you're pregnant or planning to become pregnant (400 micrograms daily is the standard recommendation before conception and during the first 12 weeks). If your folate is low alongside low B12, both should be addressed."
-    }
+    },
+    "vitamin_b12": {
+        "name": "Vitamin B12 (Total Serum)",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (148, 900),
+        "unit": "pmol/L",
+        "explanation": "Total serum vitamin B12 measures the overall concentration of cobalamin in your blood, including both the active fraction (bound to transcobalamin II) and the inactive fraction (bound to haptocorrin). B12 is essential for red blood cell production, DNA synthesis, and nervous system function. Your body stores B12 in the liver for several years, so deficiency develops slowly and may not be apparent until stores are significantly depleted. This test measures total B12; in some cases, an additional test for active B12 (holotranscobalamin) may be done to detect early deficiency.",
+        "advice_high": "High serum B12 is most commonly due to B12 supplementation or regular consumption of B12-rich foods (meat, fish, eggs, dairy). This is generally not harmful, as excess B12 is water-soluble and excreted. However, significantly elevated levels without supplementation can sometimes be associated with liver conditions, certain blood disorders, or kidney disease, and may warrant further investigation by your GP.",
+        "advice_low": "Low serum B12 can cause megaloblastic anaemia (large, abnormally formed red blood cells), neurological symptoms such as tingling or numbness in the hands and feet, memory problems, and fatigue. Deficiency is more common in vegans and vegetarians, older adults, and people with conditions affecting absorption (such as pernicious anaemia or after gastric surgery). Oral B12 supplements or dietary changes (more meat, fish, eggs, dairy, or fortified foods) are usually sufficient for mild deficiency. Your GP may recommend B12 injections if absorption is impaired or deficiency is severe."
+    },
+    "vitamin_a": {
+        "name": "Vitamin A (Retinol)",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (1.05, 3.50),
+        "unit": "µmol/L",
+        "explanation": "Vitamin A (retinol) is a fat-soluble vitamin essential for vision (particularly night vision), immune function, skin health, and cell growth and differentiation. Your body can also make vitamin A from beta-carotene found in orange and yellow vegetables. Because vitamin A is fat-soluble, it's stored in the liver, which means toxicity from excessive intake is possible — unlike water-soluble vitamins that are excreted in urine. Good dietary sources include liver, oily fish, dairy products, and eggs, while beta-carotene comes from carrots, sweet potatoes, and leafy greens.",
+        "advice_high": "Elevated serum vitamin A usually results from very high supplement intake, particularly from preformed vitamin A (retinol) in high-dose supplements or excessive liver consumption. Toxicity (hypervitaminosis A) can cause headaches, nausea, liver damage, hair loss, dry skin, and in pregnant women can be teratogenic (harmful to the developing foetus). Review any supplements you're taking and discuss with your GP. Excess beta-carotene from food causes a harmless yellowing of the skin (carotenaemia) but doesn't raise retinol levels to toxic concentrations.",
+        "advice_low": "Low vitamin A can lead to night blindness, dry eyes, dry skin, and impaired immune function. Deficiency is uncommon in the UK in people eating a balanced diet, but can occur with very restricted diets, fat malabsorption conditions (such as Crohn's disease or cystic fibrosis), or significant alcohol misuse. Increase your intake of vitamin A-rich foods such as liver (once a week), oily fish, eggs, and dairy, along with orange and yellow vegetables for beta-carotene. If a digestive condition is causing malabsorption, your GP can advise on targeted supplementation."
+    },
+    "vitamin_b1": {
+        "name": "Vitamin B1 (Thiamine)",
+        "type": "lower_bound",
+        "gender_specific": False,
+        "range": (70, 180),
+        "unit": "nmol/L",
+        "explanation": "Thiamine (vitamin B1) is a water-soluble vitamin that plays a fundamental role in energy metabolism, helping cells convert carbohydrates into usable energy. It's particularly important for the nervous system, heart, and muscles, which have high energy demands. Because the body stores only small amounts of thiamine, deficiency can develop within weeks of inadequate intake. Thiamine deficiency is most commonly associated with heavy alcohol consumption (which impairs absorption and utilisation), but can also occur with severely restricted diets or certain medical conditions.",
+        "advice_high": "Thiamine levels above the reference range are not typically a clinical concern. B1 is water-soluble, so excess is excreted in urine. No specific action is needed for a high result.",
+        "advice_low": "Low thiamine can cause Wernicke's encephalopathy (a neurological emergency characterised by confusion, poor coordination, and eye problems) and Korsakoff syndrome (severe memory impairment). Earlier, less severe deficiency can manifest as fatigue, irritability, poor memory, muscle weakness, and tingling sensations. If you drink alcohol heavily, this is the most likely cause and stopping drinking is the priority alongside supplementation. For others, increasing thiamine-rich foods (whole grains, legumes, nuts, seeds, pork, and yeast extract) or taking a B-complex supplement is appropriate. Your GP may recommend high-dose thiamine if levels are very low."
+    },
+    "vitamin_b2": {
+        "name": "Vitamin B2 (Riboflavin)",
+        "type": "lower_bound",
+        "gender_specific": False,
+        "range": (106, 638),
+        "unit": "nmol/L",
+        "explanation": "Riboflavin (vitamin B2) is a water-soluble vitamin that acts as a building block for two important coenzymes involved in energy production and the metabolism of fats, drugs, and steroids. It also plays a role in maintaining normal levels of other B vitamins, including B6 and folate. Unlike some other vitamins, riboflavin deficiency is rarely severe in developed countries, but marginal deficiency is not uncommon, particularly in people with restricted diets, heavy alcohol use, or dairy-free diets. Good sources include dairy products, meat, fish, eggs, and fortified cereals.",
+        "advice_high": "Riboflavin is water-soluble and excess is excreted in urine (which can turn a bright yellow colour when taking supplements). High levels from supplements are not considered harmful. No specific action is needed.",
+        "advice_low": "Low riboflavin can cause mouth sores and cracks at the corners of the lips (angular cheilitis), a sore and magenta-coloured tongue (glossitis), skin rashes, and sensitivity to light. Because riboflavin is needed to activate other B vitamins, deficiency can also affect B6 and folate pathways. Increase riboflavin-rich foods: dairy products, meat and poultry, fish, eggs, and dark leafy greens are good sources. A B-complex supplement can provide all the B vitamins in balanced amounts. Avoid leaving food in bright light for long periods, as riboflavin is degraded by ultraviolet light."
+    },
+    "vitamin_b6": {
+        "name": "Vitamin B6 (Pyridoxine)",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (20, 200),
+        "unit": "nmol/L",
+        "explanation": "Vitamin B6 (pyridoxine) is a water-soluble vitamin involved in over 100 enzymatic reactions, most of which involve protein and amino acid metabolism. It's also needed to make neurotransmitters (including serotonin and dopamine), to produce haemoglobin, and to support immune function. Unlike many other water-soluble vitamins, vitamin B6 can cause neurological toxicity when taken in very high supplemental doses over prolonged periods, which is why both low and high levels are worth monitoring.",
+        "advice_high": "Chronically elevated vitamin B6 is almost always due to high-dose supplementation (typically doses above 50-100 mg/day over a prolonged period) rather than dietary intake. This can cause peripheral neuropathy — numbness, tingling, and sensory changes in the hands and feet. If you're taking high-dose B6 supplements, reduce the dose and discuss with your GP. Levels from food alone are not harmful. Nerves typically recover slowly once supplementation is reduced.",
+        "advice_low": "Low vitamin B6 can cause anaemia, peripheral neuropathy, skin conditions (seborrhoeic dermatitis), a sore tongue, and mood disturbances including depression and irritability. Deficiency is more common in older adults, people with autoimmune conditions, heavy drinkers, and those taking certain medications (including isoniazid for tuberculosis). Increasing vitamin B6-rich foods (poultry, fish, potatoes, bananas, chickpeas, fortified cereals) usually corrects mild deficiency. A B-complex supplement may be recommended if dietary changes are insufficient."
+    },
+    "vitamin_c": {
+        "name": "Vitamin C",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (23, 85),
+        "unit": "µmol/L",
+        "explanation": "Vitamin C (ascorbic acid) is a water-soluble antioxidant that is essential for the synthesis of collagen (a structural protein in skin, bones, blood vessels, and connective tissue), immune function, wound healing, and the absorption of non-haem iron from plant foods. Unlike most mammals, humans cannot synthesise vitamin C and must obtain it entirely from the diet. Citrus fruits, berries, kiwi, peppers, broccoli, and leafy greens are excellent sources. Because it's water-soluble, the body cannot store large amounts, so regular daily intake is important.",
+        "advice_high": "High vitamin C levels are usually a result of supplementation and are generally not harmful as excess is excreted in urine. However, very high supplemental doses (above 1-2g/day) can occasionally cause digestive symptoms (nausea, diarrhoea, stomach cramps) and may increase the risk of kidney oxalate stones in susceptible individuals. If you're taking high-dose supplements, consider whether this is necessary and discuss with your GP if you have a history of kidney stones.",
+        "advice_low": "Mild vitamin C deficiency can cause fatigue, poor wound healing, dry skin, and frequent infections. Severe deficiency leads to scurvy, characterised by bleeding gums, bruising, joint pain, and impaired wound healing — this is uncommon in developed countries but can occur in people with very restricted diets or malabsorption conditions. Increase your intake of fresh fruit and vegetables: a glass of orange juice, a portion of strawberries, half a red pepper, or a serving of broccoli each provides well over the recommended daily amount. Cooking destroys some vitamin C, so raw or lightly cooked vegetables help preserve it."
+    },
+    "vitamin_e": {
+        "name": "Vitamin E (Alpha-Tocopherol)",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (11.6, 46.4),
+        "unit": "µmol/L",
+        "explanation": "Vitamin E is a fat-soluble antioxidant that protects cell membranes from oxidative damage. Alpha-tocopherol is the most active form in the human body. It works alongside vitamin C and other antioxidants to neutralise free radicals, supports immune function, and helps prevent the oxidation of LDL cholesterol (which is an early step in the formation of artery plaques). Good dietary sources include nuts and seeds (especially sunflower seeds and almonds), vegetable oils, avocados, and leafy green vegetables.",
+        "advice_high": "Elevated vitamin E levels are almost always due to high-dose supplementation. While dietary vitamin E is safe, very high supplemental doses (above ~400 IU/day consistently) may interfere with vitamin K's role in blood clotting, increasing bleeding risk. If you're taking high-dose vitamin E supplements, particularly alongside blood-thinning medication, discuss this with your GP. Levels from food sources alone are extremely unlikely to cause harm.",
+        "advice_low": "Low vitamin E can impair antioxidant defences, potentially increasing cellular damage from oxidative stress. Clinical deficiency is rare in healthy adults but can occur with fat malabsorption conditions (such as cystic fibrosis, Crohn's disease, or cholestatic liver disease) because vitamin E requires fat for absorption. Symptoms of severe deficiency include muscle weakness, neurological problems, and a tendency to infections. Include more nuts, seeds, vegetable oils, and green leafy vegetables in your diet. If a fat malabsorption condition is suspected, discuss supplementation with your GP."
+    },
+    "beta_carotene": {
+        "name": "Beta-Carotene",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (0.19, 2.53),
+        "unit": "µmol/L",
+        "explanation": "Beta-carotene is a plant pigment that gives orange, yellow, and some green vegetables their colour. It's a precursor to vitamin A: your body can convert it to retinol as needed, making it a safe dietary source of vitamin A without the toxicity risk of preformed vitamin A (retinol) in high doses. Beta-carotene also functions as a direct antioxidant in its own right. Serum beta-carotene reflects both dietary intake and the body's ability to absorb fat-soluble nutrients, making it a useful marker of fruit and vegetable intake and nutritional status.",
+        "advice_high": "Very high beta-carotene levels from dietary sources (eating large quantities of carrots, sweet potatoes, or other carotenoid-rich foods) cause carotenaemia, a harmless yellowing of the skin particularly visible on the palms and soles. This resolves when intake is reduced. Unlike preformed vitamin A, beta-carotene from food does not cause vitamin A toxicity. High-dose beta-carotene supplements, however, have been associated with increased lung cancer risk in smokers and should be avoided in that group.",
+        "advice_low": "Low beta-carotene typically reflects a diet low in fruits and vegetables, fat malabsorption (which impairs carotenoid absorption), or heavy smoking. It suggests your antioxidant intake from plant foods may be insufficient. Increasing your consumption of colourful fruits and vegetables — particularly carrots, sweet potatoes, butternut squash, spinach, kale, and apricots — is the most straightforward way to raise levels. Eating these foods with a small amount of fat improves absorption significantly."
+    },
+}
+
+
+HORMONES = {
+    "fsh": {
+        "name": "Follicle Stimulating Hormone (FSH)",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (1.5, 21.5, 1.5, 12.4),
+        "unit": "IU/L",
+        "explanation": "FSH is produced by the pituitary gland and plays a central role in reproductive function. In women, it stimulates the growth and maturation of ovarian follicles (which contain eggs) and triggers oestrogen production. In men, it stimulates sperm production in the testes. FSH levels fluctuate throughout the menstrual cycle in women, rising sharply mid-cycle to trigger ovulation, so the same level can be entirely normal or abnormal depending on the phase of the cycle. In women approaching or after menopause, FSH rises substantially as the pituitary tries harder to stimulate increasingly unresponsive ovaries.",
+        "advice_high": "In premenopausal women, a high FSH may indicate reduced ovarian reserve (fewer good-quality follicles remaining), which can affect fertility, or may reflect an early transition towards menopause. Very high FSH alongside irregular or absent periods may indicate premature ovarian insufficiency. In men, high FSH can point to impaired sperm production or testicular problems. In all cases, a raised FSH should be discussed with a GP or specialist, who will consider your age, symptoms, and cycle history when interpreting the result.",
+        "advice_low": "Low FSH may indicate a problem with the pituitary gland's ability to produce sufficient hormones, which can affect reproductive function and fertility. This can result from excessive exercise, significant underweight or malnutrition, high stress, pituitary conditions, or certain medications. In women it may be associated with infrequent or absent periods. Your GP will look at this alongside other hormones (LH, oestradiol, prolactin) and your symptoms to identify the cause."
+    },
+    "lh": {
+        "name": "Luteinising Hormone (LH)",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (1.0, 12.6, 1.7, 8.6),
+        "unit": "IU/L",
+        "explanation": "LH is produced by the pituitary gland alongside FSH. In women, LH levels surge dramatically at mid-cycle to trigger ovulation — the release of a mature egg. After ovulation, LH stimulates the corpus luteum (the remnant of the follicle) to produce progesterone. In men, LH stimulates the Leydig cells in the testes to produce testosterone. LH is highly pulse-dependent and varies significantly across the menstrual cycle in women, so the clinical significance of a single measurement depends heavily on the timing and context.",
+        "advice_high": "In women, a high LH outside the expected mid-cycle peak — particularly when combined with a high LH:FSH ratio — is associated with polycystic ovary syndrome (PCOS). High LH in postmenopausal women is normal. In men, elevated LH alongside low testosterone suggests the testes are not responding adequately (primary hypogonadism). Your GP will interpret this result in the context of your cycle phase, symptoms, and other hormone levels.",
+        "advice_low": "Low LH may reflect hypothalamic-pituitary dysfunction, which can result from excessive exercise, low body weight, chronic stress, or conditions affecting the pituitary gland. It can contribute to irregular or absent menstrual cycles in women and low testosterone in men. Your GP will assess this alongside other reproductive hormones and your overall health picture."
+    },
+    "testosterone": {
+        "name": "Testosterone (Total)",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (0.3, 2.8, 9.0, 29.0),
+        "unit": "nmol/L",
+        "explanation": "Testosterone is the primary male sex hormone, though it's present and important in both sexes. In men, it's responsible for the development of male secondary sexual characteristics, libido, muscle and bone mass, mood, and energy. In women, testosterone is produced in smaller amounts by the ovaries and adrenal glands and plays a role in libido, energy, bone density, and overall wellbeing. Blood levels of testosterone fluctuate during the day (highest in the morning) and are influenced by sleep, exercise, stress, and weight.",
+        "advice_high": "In women, elevated testosterone is associated with polycystic ovary syndrome (PCOS), adrenal conditions, or use of certain medications or supplements. Symptoms can include acne, excess hair growth (hirsutism), irregular periods, and in some cases deepening of the voice. In men, high testosterone may result from anabolic steroid use or, rarely, certain tumours. Discuss this result with your GP, who will consider your symptoms and may arrange further hormone testing.",
+        "advice_low": "In men, low testosterone (hypogonadism) can cause fatigue, reduced libido, erectile dysfunction, low mood, difficulty concentrating, reduced muscle mass, and bone loss. Common causes include ageing, obesity, chronic illness, stress, or pituitary problems. Lifestyle factors such as improving sleep, regular exercise, and weight loss can help. Your GP may consider testosterone replacement therapy if levels are consistently low with significant symptoms. In women, very low testosterone can contribute to low energy, reduced libido, and mood changes; discuss with your GP if this applies."
+    },
+    "free_testosterone": {
+        "name": "Free Testosterone",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (1, 12, 150, 500),
+        "unit": "pmol/L",
+        "explanation": "Most testosterone in the blood is bound to proteins (mainly sex hormone binding globulin and albumin) and is unavailable for use by cells. Free testosterone is the unbound fraction — typically just 1-3% of the total — and is the portion that is biologically active. It's often a more useful measure than total testosterone when SHBG levels are abnormal (SHBG rises with age, liver disease, and oestrogen, and falls with obesity and hypothyroidism), because changes in SHBG can make total testosterone misleading.",
+        "advice_high": "Elevated free testosterone in women is often associated with PCOS, adrenal conditions, or exogenous androgen use, and may cause symptoms such as acne, excess hair, and irregular periods. In men, significantly high free testosterone may result from anabolic steroid use. Discuss with your GP, who will look at this alongside total testosterone and SHBG.",
+        "advice_low": "Low free testosterone despite normal total testosterone can occur when SHBG is elevated, leaving less testosterone in the active unbound state. In men, this can contribute to fatigue, reduced libido, and low mood. In women, very low free testosterone may affect energy and libido. Your GP will interpret this result alongside SHBG and total testosterone levels."
+    },
+    "oestradiol": {
+        "name": "Oestradiol (E2)",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (77, 921, 28, 156),
+        "unit": "pmol/L",
+        "explanation": "Oestradiol is the most potent and predominant form of oestrogen in the body. In women, it's produced primarily by the ovaries and plays a central role in the menstrual cycle, female secondary sexual characteristics, bone density, cardiovascular health, and mood. Levels fluctuate considerably across the menstrual cycle — rising in the follicular phase to stimulate follicle growth, peaking just before ovulation, and falling during the luteal phase. After menopause, oestradiol levels drop dramatically. In men, oestradiol is produced in small amounts from testosterone and plays a role in bone health, libido, and brain function.",
+        "advice_high": "In women of reproductive age, high oestradiol may reflect the normal mid-cycle peak, stimulated follicle development (in fertility treatment), or occasionally ovarian cysts or tumours. In men, elevated oestradiol can cause gynaecomastia (breast tissue development), reduced libido, and other feminising effects — this can result from obesity (fat tissue converts testosterone to oestradiol), liver disease, certain medications, or, rarely, testicular conditions. Your GP will interpret this result in the context of your cycle phase (for women), symptoms, and other hormone levels.",
+        "advice_low": "In premenopausal women, low oestradiol can cause irregular or absent periods, hot flushes, vaginal dryness, mood changes, and reduced bone density. Causes include premature ovarian insufficiency, hypopituitarism, excessive exercise, significant underweight, or stress. In postmenopausal women, low oestradiol is expected. In men, very low levels can affect bone density and libido. Your GP will assess this alongside your symptoms, FSH/LH levels, and overall health."
+    },
+    "progesterone": {
+        "name": "Progesterone",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (0.18, 75.9, 0.15, 1.40),
+        "unit": "nmol/L",
+        "explanation": "Progesterone is a steroid hormone produced mainly by the corpus luteum in the ovary after ovulation (the luteal phase) and by the placenta during pregnancy. It prepares the uterus lining for implantation of a fertilised egg and maintains early pregnancy. Outside of pregnancy, progesterone levels are low in the follicular phase and rise substantially after ovulation — this is why a progesterone blood test taken around day 21 of a 28-day cycle is used to confirm that ovulation has occurred. In men, progesterone is produced in small amounts by the adrenal glands and testes.",
+        "advice_high": "Elevated progesterone outside of pregnancy most commonly indicates that you are in the mid-luteal phase of your cycle or that you're taking progesterone-containing medication (such as some contraceptives or hormone replacement therapy). Rarely, very high levels can indicate certain adrenal or ovarian conditions. Your GP will consider the timing of your test in relation to your cycle when interpreting this result.",
+        "advice_low": "In women trying to conceive, a low mid-luteal progesterone (typically checked around day 21) suggests ovulation may not have occurred, or that the luteal phase is insufficient to support implantation. Other causes of low progesterone include stress, excessive exercise, low body weight, or conditions affecting ovarian function. If you're not trying to conceive, low progesterone may still explain symptoms such as irregular periods, premenstrual spotting, or mood changes. Your GP can advise on whether any intervention is appropriate."
+    },
+    "prolactin": {
+        "name": "Prolactin",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (102, 496, 86, 324),
+        "unit": "mIU/L",
+        "explanation": "Prolactin is a hormone produced by the pituitary gland, best known for stimulating milk production after childbirth. It's present at low levels in everyone (not just new mothers). Prolactin levels are naturally higher during pregnancy and breastfeeding. A single mildly elevated prolactin result can be caused by everyday factors such as stress, strenuous exercise, sexual activity, or having eaten recently before the test, all of which can transiently raise levels. Persistently elevated prolactin (hyperprolactinaemia) can, however, affect reproductive function in both men and women.",
+        "advice_high": "An elevated prolactin is fairly common as a one-off result due to transient causes (stress, exercise, recent eating). If it's persistently elevated on repeat testing under relaxed fasting conditions, it should be investigated. Causes of true hyperprolactinaemia include a prolactin-secreting pituitary adenoma (prolactinoma, which is usually benign), certain medications (including antipsychotics, antidepressants, and stomach medications like metoclopramide), hypothyroidism, and kidney or liver disease. In women, high prolactin can cause irregular or absent periods, infertility, and unexpected milk production. In men, it can cause reduced libido, erectile dysfunction, and gynaecomastia. Treatment depends on the cause.",
+        "advice_low": "Low prolactin levels are not typically a clinical concern and do not require specific action."
+    },
+    "shbg": {
+        "name": "Sex Hormone Binding Globulin (SHBG)",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (18, 144, 13, 71),
+        "unit": "nmol/L",
+        "explanation": "SHBG is a protein made by the liver that binds tightly to sex hormones — primarily testosterone and to a lesser extent oestradiol — transporting them in the blood. Hormones bound to SHBG are inactive; only unbound (free) hormones are biologically available to cells. SHBG levels profoundly affect how much active sex hormone your body has available. Higher SHBG means less free hormone; lower SHBG means more. Many factors influence SHBG: it rises with oestrogen, ageing, hyperthyroidism, and liver disease; it falls with obesity, insulin resistance, hypothyroidism, and androgenic steroids.",
+        "advice_high": "High SHBG means more of your testosterone and oestradiol is bound and inactive, potentially leaving you with less bioavailable hormone than your total levels suggest. In women, this can contribute to symptoms of low androgen (fatigue, low libido, mood changes). In men, very high SHBG can mask functional testosterone deficiency. The cause of high SHBG should be explored — possibilities include hyperthyroidism, liver conditions, anorexia, or high oestrogen states. Your GP will look at this alongside total and free sex hormone levels.",
+        "advice_low": "Low SHBG means more of your sex hormones are circulating freely. In women, this is associated with insulin resistance, obesity, PCOS, hypothyroidism, and high androgen levels — it effectively amplifies androgenic effects and is a marker of metabolic risk. In men, low SHBG may indicate insulin resistance and is associated with an increased risk of type 2 diabetes and cardiovascular disease. Improving insulin sensitivity through a healthier diet, regular exercise, and weight loss if appropriate can help normalise SHBG levels."
+    },
+    "free_androgen_index": {
+        "name": "Free Androgen Index (FAI)",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (0.5, 5.0, 30, 80),
+        "unit": "%",
+        "explanation": "The Free Androgen Index (FAI) is a calculated ratio that estimates the level of biologically active (free) testosterone. It's calculated as: (Total Testosterone ÷ SHBG) × 100. In women, it's a clinically useful marker for assessing androgen status, particularly in the investigation of PCOS, where excessive androgen activity is common. A high FAI in women suggests more free testosterone is available than normal. In men, where free testosterone is more commonly measured directly, FAI provides an indirect estimate of androgen bioavailability.",
+        "advice_high": "In women, a high FAI suggests excess free androgen activity, which is the hallmark finding in PCOS. This can be associated with irregular periods, acne, excess facial or body hair (hirsutism), and fertility difficulties. Other causes include congenital adrenal hyperplasia or androgen-secreting tumours (rare). Your GP will interpret this alongside clinical symptoms, ultrasound findings, and other hormone tests. Lifestyle interventions (regular exercise, reducing refined carbohydrates, weight management if appropriate) can reduce androgen activity in insulin-resistant women with PCOS.",
+        "advice_low": "In women, a low FAI suggests low androgen bioavailability, which can contribute to fatigue, low libido, reduced motivation, and mood changes. This can occur with elevated SHBG (which binds up more testosterone) or genuinely low testosterone production. In men, a low FAI suggests functional androgen deficiency. Your GP will consider this alongside symptoms and other hormone levels when deciding if any treatment is appropriate."
+    },
+}
+
+MINERALS = {
+    "magnesium": {
+        "name": "Magnesium",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (0.70, 1.00),
+        "unit": "mmol/L",
+        "explanation": "Magnesium is the fourth most abundant mineral in the body and is involved in over 300 enzymatic reactions, including energy production, protein synthesis, DNA repair, muscle contraction, nerve function, and blood sugar regulation. About 60% of the body's magnesium is stored in bones, with most of the rest in muscle and soft tissue. Only about 1% circulates in the blood, which is why blood levels don't always reflect total body stores — normal serum magnesium can coexist with intracellular deficiency. Good dietary sources include nuts, seeds, dark chocolate, leafy greens, legumes, and whole grains.",
+        "advice_high": "Elevated serum magnesium (hypermagnesaemia) is uncommon in people with normal kidney function, as the kidneys efficiently excrete excess magnesium. It most often occurs in people with kidney disease or those taking large doses of magnesium-containing antacids or laxatives. Mild hypermagnesaemia may cause flushing, nausea, and low blood pressure. Higher levels can cause muscle weakness, slowed breathing, and heart rhythm problems. If you have kidney disease, discuss your magnesium intake with your GP.",
+        "advice_low": "Low magnesium (hypomagnesaemia) can cause muscle cramps, twitching, fatigue, insomnia, anxiety, irregular heart rhythm, and headaches. It's more common than often recognised and can result from a diet low in magnesium-rich foods, heavy alcohol use, medications (including proton pump inhibitors and some diuretics), or conditions causing excessive gastrointestinal losses. Increase your intake of magnesium-rich foods — nuts (especially almonds and cashews), pumpkin seeds, dark chocolate, spinach, and whole grains. A magnesium supplement (magnesium glycinate or citrate are well absorbed) may be recommended by your GP if levels remain low."
+    },
+    "copper": {
+        "name": "Copper",
+        "type": "hilo",
+        "gender_specific": True,
+        "range": (12.6, 24.4, 11.0, 22.0),
+        "unit": "µmol/L",
+        "explanation": "Copper is an essential trace mineral involved in the production of red blood cells, collagen and connective tissue formation, iron metabolism, and the functioning of several important enzymes. It's also a component of the antioxidant enzyme superoxide dismutase. Women typically have slightly higher copper levels than men, partly because oestrogen increases copper levels. Good dietary sources include shellfish (especially oysters), liver, nuts, seeds, dark chocolate, and whole grains. Copper balance is closely linked to zinc intake, as high zinc supplementation can deplete copper.",
+        "advice_high": "Elevated copper can occur with liver disease (the liver regulates copper metabolism), oestrogen therapy or pregnancy (which raise copper-binding proteins), chronic inflammation, or, rarely, the genetic condition Wilson's disease, in which copper accumulates in the liver, brain, and other organs. Your GP will look at this in the context of your liver function tests and other results. Reducing high-dose zinc supplementation (which can impair copper metabolism in some contexts) and limiting dietary copper-rich foods may be advised if levels are significantly elevated.",
+        "advice_low": "Low copper can cause anaemia (copper is needed for iron absorption and red blood cell formation), fatigue, poor immune function, and neurological symptoms including weakness and balance problems. Deficiency is uncommon but can occur with excessive zinc supplementation (zinc and copper compete for absorption), malabsorption conditions, bariatric surgery, or prolonged parenteral nutrition. Include more copper-rich foods in your diet (shellfish, liver, nuts, seeds, legumes), and if you take zinc supplements, ensure the dose is not excessive. Your GP may recommend copper supplementation if levels are significantly low."
+    },
+    "red_cell_magnesium": {
+        "name": "Red Cell Magnesium",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (1.65, 2.65),
+        "unit": "mmol/L",
+        "explanation": "Red cell magnesium measures the magnesium content inside red blood cells, rather than in the liquid portion of the blood (serum). Because most of the body's magnesium is intracellular, red cell magnesium is considered a more sensitive marker of total body magnesium status than serum magnesium alone. A person can have a normal serum magnesium while their intracellular stores are depleted, making this test particularly useful for identifying magnesium deficiency that serum testing might miss. The test is most helpful when symptoms suggest magnesium deficiency despite a normal serum level.",
+        "advice_high": "Elevated red cell magnesium is unusual and generally not a clinical concern. It may be seen with very high magnesium supplementation. If you're supplementing magnesium, discuss the dose with your GP.",
+        "advice_low": "Low red cell magnesium indicates that intracellular magnesium stores are depleted, which may persist even when serum magnesium appears normal. This is a more sensitive indicator of functional magnesium deficiency and can be associated with symptoms such as muscle cramps, fatigue, poor sleep, irritability, and heart palpitations. The approach is the same as for low serum magnesium: increase magnesium-rich foods (nuts, seeds, dark leafy greens, whole grains, dark chocolate) and consider a well-absorbed magnesium supplement (glycinate or citrate). Address any underlying causes such as heavy alcohol use or medications that deplete magnesium, and discuss with your GP."
+    },
+}
+
+DIGESTIVE_ENZYMES = {
+    "amylase": {
+        "name": "Amylase",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (30, 110),
+        "unit": "U/L",
+        "explanation": "Amylase is an enzyme produced primarily by the pancreas and the salivary glands that breaks down carbohydrates (starches) into sugars. Small amounts are normally present in the blood, but when the pancreas becomes inflamed or damaged, amylase leaks out in larger quantities, causing blood levels to rise sharply. Because amylase also comes from the salivary glands, elevated levels can occasionally result from non-pancreatic causes. Amylase levels rise and fall more quickly than lipase, meaning it may return to normal within 2-3 days of an acute episode, even if the underlying problem persists.",
+        "advice_high": "A significantly elevated amylase is most commonly associated with acute pancreatitis (sudden inflammation of the pancreas) or a blocked pancreatic duct. Other causes include salivary gland inflammation (mumps), bowel obstruction, or kidney problems (since amylase is excreted by the kidneys). If you're experiencing severe abdominal pain, particularly in the upper abdomen radiating to the back, nausea, and vomiting, seek medical attention promptly, as acute pancreatitis can be serious. Common triggers include gallstones and heavy alcohol consumption. Mildly elevated amylase without symptoms may be investigated further but is often less urgent.",
+        "advice_low": "Low amylase can occasionally be seen in chronic pancreatitis (where long-term damage reduces the pancreas's ability to produce enzymes) or in conditions causing the replacement of pancreatic tissue. If combined with digestive symptoms such as fatty stools, bloating, or weight loss, this may indicate exocrine pancreatic insufficiency and warrants further investigation. Mention this result to your GP alongside any relevant symptoms."
+    },
+    "lipase": {
+        "name": "Lipase",
+        "type": "hilo",
+        "gender_specific": False,
+        "range": (13, 60),
+        "unit": "U/L",
+        "explanation": "Lipase is an enzyme produced almost exclusively by the pancreas that breaks down fats (triglycerides) during digestion. Because it's so specific to the pancreas, elevated serum lipase is a more specific marker of pancreatic injury than amylase. Importantly, lipase remains elevated in the blood for longer than amylase after an acute episode (up to 2 weeks), making it a more sensitive test for pancreatitis when there's been a delay between the event and the blood test.",
+        "advice_high": "Elevated lipase strongly suggests pancreatic inflammation or injury, with acute pancreatitis being the most common cause. Very high levels (more than three times the upper limit) are particularly significant. Other causes include pancreatic duct obstruction, chronic pancreatitis, and occasionally bowel conditions. If you're experiencing upper abdominal pain radiating to the back, nausea, or vomiting, seek medical attention promptly. Avoiding alcohol and following a low-fat diet during recovery from pancreatitis episodes is important. Your GP will investigate the underlying cause.",
+        "advice_low": "Low lipase can occur in advanced chronic pancreatitis where the gland has lost significant enzyme-producing capacity. This may be associated with fat malabsorption (greasy, floating stools), weight loss, and nutritional deficiencies. If you have symptoms suggesting fat malabsorption, mention this result to your GP, who may arrange further pancreatic function tests and consider enzyme replacement therapy."
+    },
+}
+
+INFLAMMATORY_MARKERS = {
+    "esr": {
+        "name": "Erythrocyte Sedimentation Rate (ESR)",
+        "type": "upper_bound",
+        "gender_specific": True,
+        "range": (0, 20, 0, 15),
+        "unit": "mm/hr",
+        "explanation": "ESR measures how quickly red blood cells settle to the bottom of a test tube over one hour. When there is inflammation anywhere in the body, proteins such as fibrinogen and immunoglobulins cause red blood cells to clump together and fall more quickly, raising the ESR. It's a non-specific marker: it can be elevated by many conditions, from infections and autoimmune diseases to malignancy, anaemia, and even ageing. ESR tends to rise and fall more slowly than other inflammatory markers like CRP, making it useful for tracking chronic inflammatory conditions over time. Women naturally have slightly higher ESR values than men.",
+        "advice_high": "An elevated ESR indicates inflammation somewhere in the body, but doesn't identify the source. In the context of specific symptoms, it can support diagnoses such as rheumatoid arthritis, other autoimmune conditions, infections, temporal arteritis (especially important in older adults with headaches), or malignancy. A mildly elevated ESR with no symptoms is common and often has a benign explanation, including age-related changes or anaemia. Your GP will interpret this result alongside your symptoms, other blood tests, and clinical examination. If ESR is very high or accompanied by concerning symptoms, further investigation will be arranged.",
+        "advice_low": "A low or normal ESR is reassuring and suggests significant systemic inflammation is unlikely at the time of testing. No action is needed based on this finding alone."
+    },
 }
 
 BLOOD_METRIC_DATA = {}
@@ -713,6 +1086,10 @@ BLOOD_METRIC_DATA.update(URINE_ANALYSIS)
 BLOOD_METRIC_DATA.update(THYROID_FUNCTION)
 BLOOD_METRIC_DATA.update(CANCER_MARKERS)
 BLOOD_METRIC_DATA.update(VITAMINS)
+BLOOD_METRIC_DATA.update(HORMONES)
+BLOOD_METRIC_DATA.update(MINERALS)
+BLOOD_METRIC_DATA.update(DIGESTIVE_ENZYMES)
+BLOOD_METRIC_DATA.update(INFLAMMATORY_MARKERS)
 
 def interpret_result(metric, data, gender):
     """
