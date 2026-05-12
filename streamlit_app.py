@@ -78,8 +78,8 @@ st.markdown("""
 
     /* ── Typography ── */
     h1 {
-        font-family: 'poppins', sans-serif !important;
-        font-weight: 700 !important;
+        font-family: 'figtree', sans-serif !important;
+        font-weight: 500 !important;
         font-size: 2rem !important;
         color: #54565A !important;
         letter-spacing: -0.3px !important;
@@ -87,15 +87,15 @@ st.markdown("""
         margin-bottom: 1.25rem !important;
     }
     h2 {
-        font-family: 'poppins', sans-serif !important;
-        font-weight: 600 !important;
+        font-family: 'figtree', sans-serif !important;
+        font-weight: 500 !important;
         font-size: 1.35rem !important;
         color: var(--text-primary) !important;
         letter-spacing: -0.1px !important;
     }
     h3 {
-        font-family: 'poppins', sans-serif !important;
-        font-weight: 600 !important;
+        font-family: 'figtree', sans-serif !important;
+        font-weight: 500 !important;
         font-size: 1.05rem !important;
         color: var(--text-primary) !important;
     }
@@ -119,8 +119,8 @@ st.markdown("""
         overflow: visible !important;
     }
     [data-testid="stExpander"] details summary {
-        font-family: 'poppins', sans-serif !important;
-        font-weight: 600 !important;
+        font-family: 'figtree', sans-serif !important;
+        font-weight: 500 !important;
         font-size: 0.88rem !important;
         color: var(--text-primary) !important;
         padding: 13px 18px !important;
@@ -212,8 +212,8 @@ st.markdown("""
         color: #FFFFFF !important;
         border: none !important;
         border-radius: var(--radius-sm) !important;
-        font-family: 'poppins', sans-serif !important;
-        font-weight: 600 !important;
+        font-family: 'figtree', sans-serif !important;
+        font-weight: 500 !important;
         font-size: 0.95rem !important;
         padding: 14px 32px !important;
         width: 100% !important;
@@ -365,8 +365,8 @@ st.markdown("""
     }
     .summary-count {
         font-size: 1.5rem;
-        font-weight: 700;
-        font-family: 'poppins', sans-serif;
+        font-weight: 500;
+        font-family: 'figtree', sans-serif;
         line-height: 1;
     }
     .summary-chip-abnormal .summary-count { color: var(--red); }
@@ -393,9 +393,9 @@ st.markdown("""
 
     /* ── Results section labels ── */
     .results-eyebrow {
-        font-family: 'poppins', sans-serif;
+        font-family: 'figtree', sans-serif;
         font-size: 0.68rem;
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--orange);
@@ -422,8 +422,8 @@ st.markdown("""
         padding: 2px 10px;
         border-radius: 20px;
         font-size: 0.7rem;
-        font-weight: 600;
-        font-family: 'poppins', sans-serif;
+        font-weight: 500;
+        font-family: 'figtree', sans-serif;
         letter-spacing: 0.06em;
         text-transform: uppercase;
         margin-bottom: 10px;
@@ -439,9 +439,9 @@ st.markdown("""
         border: 1px solid rgba(31, 140, 71, 0.25);
     }
     .result-name {
-        font-family: 'poppins', sans-serif;
+        font-family: 'figtree', sans-serif;
         font-size: 0.95rem;
-        font-weight: 600;
+        font-weight: 500;
         color: var(--text-primary);
         margin-bottom: 6px;
         line-height: 1.3;
@@ -455,7 +455,7 @@ st.markdown("""
     }
     .result-body strong {
         color: var(--text-primary);
-        font-weight: 600;
+        font-weight: 500;
     }
 
     /* ── Results placeholder ── */
@@ -508,8 +508,8 @@ st.markdown("""
         margin-bottom: 6px;
     }
     .consent-title {
-        font-family: 'poppins', sans-serif;
-        font-weight: 600;
+        font-family: 'figtree', sans-serif;
+        font-weight: 500;
         font-size: 1.3rem;
         color: var(--text-primary);
         margin: 0 0 16px;
@@ -529,8 +529,8 @@ st.markdown("""
         margin-bottom: 10px;
     }
     .consent-toggle-label {
-        font-family: 'poppins', sans-serif;
-        font-weight: 600;
+        font-family: 'figtree', sans-serif;
+        font-weight: 500;
         font-size: 0.88rem;
         color: var(--text-primary);
         margin-bottom: 3px;
@@ -617,6 +617,40 @@ st.markdown("""
         box-shadow: none !important;
     }
     [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button:hover p {
+        color: var(--orange) !important;
+    }
+    /* "Where do I find my lab report?" link-style button.
+       :not(:has(#col-results-marker)) excludes the outer st.columns([1,1])
+       horizontal block (which also propagates :has on the marker) so the
+       rule only matches the inner st.columns([1,8]) wrapper. */
+    [data-testid="stHorizontalBlock"]:has(#lab-report-help-marker):not(:has(#col-results-marker)) {
+        margin-top: -10px !important;
+        gap: 0 !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#lab-report-help-marker):not(:has(#col-results-marker)) [data-testid="stButton"] > button {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: unset !important;
+        width: auto !important;
+        margin-top: 0 !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#lab-report-help-marker):not(:has(#col-results-marker)) [data-testid="stButton"] > button p {
+        color: var(--text-muted) !important;
+        font-family: 'figtree', sans-serif !important;
+        font-size: 0.80rem !important;
+        text-decoration: underline !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#lab-report-help-marker):not(:has(#col-results-marker)) [data-testid="stButton"] > button:hover {
+        background: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#lab-report-help-marker):not(:has(#col-results-marker)) [data-testid="stButton"] > button:hover p {
         color: var(--orange) !important;
     }
     /* Data settings modal: pad the content column (two selectors for robustness) */
@@ -1151,7 +1185,7 @@ body::before {
                     unsafe_allow_html=True)
 
         st.markdown(
-            '<div style="font-family:\'poppins\',sans-serif;font-weight:600;'
+            '<div style="font-family:\'figtree\',sans-serif;font-weight:500;'
             'font-size:1.2rem;color:var(--text-primary);line-height:1.3;'
             'padding-right:44px;margin-bottom:8px;">Privacy Notice</div>',
             unsafe_allow_html=True,
@@ -1241,7 +1275,7 @@ body::before {
 
         st.markdown("""
 <div style="margin-bottom:20px;">
-  <div style="font-family:'poppins',sans-serif;font-weight:600;font-size:1.2rem;
+  <div style="font-family:'figtree',sans-serif;font-weight:500;font-size:1.2rem;
               color:var(--text-primary);margin:0 0 10px;">Privacy Settings</div>
   <div style="font-family:'figtree',sans-serif;font-size:0.88rem;color:var(--text-secondary);
               line-height:1.65;">
@@ -1489,7 +1523,7 @@ body::before {
     and uploading results does not create a clinical relationship with Vital Flow Health.
   </div>
   <div style="font-family:'figtree',sans-serif;font-size:0.75rem;letter-spacing:0.6px;
-              text-transform:uppercase;color:var(--text-muted);font-weight:600;
+              text-transform:uppercase;color:var(--text-muted);font-weight:500;
               padding-top:16px;border-top:1px solid var(--border-subtle);margin-bottom:10px;">
     Your data choices
   </div>
@@ -1539,7 +1573,7 @@ body::before {
         # ── Confirmations + footer ───────────────────────────────────────────
         st.markdown("""
 <div style="margin:4px 40px 0;">
-  <div style="font-family:'poppins',sans-serif;font-size:0.83rem;font-weight:600;
+  <div style="font-family:'figtree',sans-serif;font-size:0.83rem;font-weight:500;
               color:var(--text-primary);padding-top:18px;
               border-top:1px solid var(--border-subtle);margin-bottom:8px;">
     By uploading your results, you confirm that:
@@ -1647,6 +1681,32 @@ if not sex or age is None:
 st.divider()
 
 results = {}
+
+@st.dialog("Where do I find my lab report?")
+def lab_report_help_dialog():
+    st.markdown(
+        """
+        <div style='font-family:figtree,sans-serif;line-height:1.7;'>
+
+        <ol style='padding-left:1.2rem;margin-bottom:16px;'>
+          <li style='margin-bottom:8px;'><strong>Check your email</strong> for a message from Vital Flow Health
+          containing a link to view your documents on the portal.</li>
+          <li style='margin-bottom:8px;'><strong>Open the link</strong> and enter your date of birth when prompted.</li>
+          <li style='margin-bottom:8px;'><strong>Click "View test results"</strong> to open your report.</li>
+          <li style='margin-bottom:8px;'><strong>Click the print button</strong> in the top right corner of the
+          page, then save or download as a PDF.</li>
+        </ol>
+
+        <p style='font-size:0.82rem;color:var(--text-secondary);margin-top:12px;'>
+        Once you have the PDF, drag it into the upload box to autofill your results.
+        </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 upload = False
 
 # ── Two-column layout ──
@@ -1666,6 +1726,11 @@ with col_input:
         "Vital Flow Health patient? Upload your lab report PDF to autofill.",
         type=["pdf"]
     )
+    _lrh_col, _ = st.columns([1, 8])
+    with _lrh_col:
+        st.markdown('<span id="lab-report-help-marker" hidden aria-hidden="true"></span>', unsafe_allow_html=True)
+        if st.button("Where do I find my lab report?", key="lab_report_help"):
+            lab_report_help_dialog()
     if uploaded_file is not None:
         if uploaded_file.name.lower().endswith(".pdf"):
             with st.spinner("Reading your lab report..."):
@@ -1752,6 +1817,7 @@ with col_input:
             submit_results(results, sex, age)
 
 with col_results:
+    st.markdown('<span id="col-results-marker" hidden aria-hidden="true"></span>', unsafe_allow_html=True)
     interp = st.session_state.last_interp
 
     if interp is None:
@@ -1781,7 +1847,7 @@ with col_results:
         patient_name = st.text_input(
             "Name for report",
             value=st.session_state.patient_name,
-            placeholder="Optional — leave blank to omit",
+            placeholder="",
             label_visibility="visible",
         )
         pdf_bytes = generate_pdf_report(
