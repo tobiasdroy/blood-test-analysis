@@ -579,11 +579,40 @@ st.markdown("""
         border-top: 1px solid var(--border-subtle) !important;
         padding: 10px 0 !important;
         justify-content: center !important;
+        align-items: center !important;
         margin: 0 !important;
         gap: 0 !important;
         height: auto !important;
         overflow: visible !important;
     }
+    /* Each footer column: shrink to content width, vertically centred */
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) > div[data-testid="stColumn"] {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        min-height: unset !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 20px !important;
+    }
+    /* Normalise the markdown container holding the mailto link so it sits at
+       the same vertical position as the st.button text in adjacent columns */
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stMarkdownContainer"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stMarkdownContainer"] p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+    }
+    /* Hide the marker span itself (HTML hidden attr may not always suppress layout) */
+    #footer-outer-marker { display: none !important; }
     /* Footer link-style buttons */
     [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button {
         background: none !important;
@@ -592,7 +621,7 @@ st.markdown("""
         padding: 0 !important;
         height: auto !important;
         min-height: unset !important;
-        width: 100% !important;
+        width: auto !important;
         text-align: center !important;
         font-family: 'figtree', sans-serif !important;
         font-size: 0.80rem !important;
@@ -601,6 +630,7 @@ st.markdown("""
         letter-spacing: 0 !important;
         margin-top: 0 !important;
         line-height: 1 !important;
+        white-space: nowrap !important;
     }
     [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button p {
         color: var(--text-muted) !important;
@@ -609,6 +639,7 @@ st.markdown("""
         text-decoration: underline !important;
         margin: 0 !important;
         line-height: 1 !important;
+        white-space: nowrap !important;
     }
     [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button:hover {
         background: none !important;
@@ -618,6 +649,24 @@ st.markdown("""
     }
     [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) [data-testid="stButton"] > button:hover p {
         color: var(--orange) !important;
+    }
+    /* Footer mailto link — matches the link-style button appearance */
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) a.footer-mailto {
+        display: block;
+        text-align: center;
+        font-family: 'figtree', sans-serif;
+        font-size: 0.80rem;
+        color: var(--text-muted);
+        text-decoration: underline;
+        line-height: 1;
+        white-space: nowrap;
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+    [data-testid="stHorizontalBlock"]:has(#footer-outer-marker) a.footer-mailto:hover {
+        color: var(--orange);
     }
     /* "Where do I find my lab report?" link-style button.
        :not(:has(#col-results-marker)) excludes the outer st.columns([1,1])
@@ -651,6 +700,33 @@ st.markdown("""
         box-shadow: none !important;
     }
     [data-testid="stHorizontalBlock"]:has(#lab-report-help-marker):not(:has(#col-results-marker)) [data-testid="stButton"] > button:hover p {
+        color: var(--orange) !important;
+    }
+    /* "Clear all values" link-style button */
+    .st-key-clear_all_values [data-testid="stButton"] > button {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: unset !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    .st-key-clear_all_values [data-testid="stButton"] > button p {
+        color: var(--text-muted) !important;
+        font-family: 'figtree', sans-serif !important;
+        font-size: 0.80rem !important;
+        text-decoration: underline !important;
+        text-align: center !important;
+        margin: 0 !important;
+    }
+    .st-key-clear_all_values [data-testid="stButton"] > button:hover {
+        background: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    .st-key-clear_all_values [data-testid="stButton"] > button:hover p {
         color: var(--orange) !important;
     }
     /* Data settings modal: pad the content column (two selectors for robustness) */
@@ -994,6 +1070,18 @@ def fig_to_html_iframe(html_content):
     return f'<iframe srcdoc="{encoded}" scrolling="no" style="width:100%; height:90px; border:none; border-radius:12px; overflow:hidden; display:block;"></iframe>'
 
 
+def _clear_all_values():
+    st.session_state.manual_values = {}
+    st.session_state.last_interp = None
+    st.session_state.patient_name = ""
+    for key in BLOOD_METRIC_DATA:
+        if key in st.session_state:
+            st.session_state[key] = ""
+        upload_key = f"{key}_upload"
+        if upload_key in st.session_state:
+            st.session_state[upload_key] = ""
+
+
 def input_blood_metrics(DATA, upload, results):
     for metric, meta in DATA.items():
         col1, col2 = st.columns([3, 2])
@@ -1023,6 +1111,10 @@ def input_blood_metrics(DATA, upload, results):
                     placeholder="0.00"
                 )
             else:
+                # Restore display value if Streamlit cleared widget state while metric was hidden
+                if metric not in st.session_state and metric in st.session_state.manual_values:
+                    saved = st.session_state.manual_values[metric]
+                    st.session_state[metric] = str(int(saved)) if saved == int(saved) else str(saved)
                 raw_value = st.text_input(
                     label=meta['name'],
                     key=metric,
@@ -1038,6 +1130,9 @@ def input_blood_metrics(DATA, upload, results):
 
         if value > 0:
             results[metric] = {**meta, "value": value}
+            st.session_state.manual_values[metric] = value
+        else:
+            st.session_state.manual_values.pop(metric, None)
 
 
 # ── Session state ──
@@ -1059,6 +1154,8 @@ if "show_modal" not in st.session_state:
     st.session_state.show_modal = None
 if "sf_submitted_hash" not in st.session_state:
     st.session_state.sf_submitted_hash = None
+if "manual_values" not in st.session_state:
+    st.session_state.manual_values = {}
 
 
 _PRIVACY_NOTICE = """
@@ -1649,25 +1746,26 @@ with _dem_col2:
     )
 
 # ── Footer (fixed at bottom, always accessible before and after sex selection) ─
-_, _fc, _ = st.columns([3, 2, 3])
-with _fc:
-    st.markdown('<span id="footer-outer-marker" hidden aria-hidden="true"></span>',
-                unsafe_allow_html=True)
-    _fb1, _fsep, _fb2 = st.columns([2, 1, 2])
-    with _fb1:
-        if st.button("Privacy Settings", key="open_ds_modal"):
-            st.session_state.show_modal = "data_settings"
-            st.rerun()
-    with _fsep:
-        st.markdown(
-            '<p style="text-align:center;color:var(--border-medium);'
-            'font-size:0.80rem;margin:0;line-height:2;">·</p>',
-            unsafe_allow_html=True,
-        )
-    with _fb2:
-        if st.button("Privacy Notice", key="open_pn_modal"):
-            st.session_state.show_modal = "privacy_notice"
-            st.rerun()
+# The marker lives inside _fb1 so the stHorizontalBlock that :has(#footer-outer-marker)
+# is the inner row itself — giving it position:fixed and width:100vw directly.
+_fb1, _fb2, _fb3 = st.columns([1, 1, 1])
+with _fb1:
+    if st.button("Privacy Settings", key="open_ds_modal"):
+        st.session_state.show_modal = "data_settings"
+        st.rerun()
+with _fb2:
+    if st.button("Privacy Notice", key="open_pn_modal"):
+        st.session_state.show_modal = "privacy_notice"
+        st.rerun()
+with _fb3:
+    # Marker is inline here — same element container as the link, so all three
+    # columns have exactly one element-container and align on the same baseline.
+    st.markdown(
+        '<span id="footer-outer-marker" hidden aria-hidden="true"></span>'
+        '<a class="footer-mailto" href="mailto:admin@vitalflow-health.com'
+        '?subject=Bug%20Report">Report a Bug</a>',
+        unsafe_allow_html=True,
+    )
 
 # ── Modals (session-state driven) ─────────────────────────────────────────────
 if st.session_state.show_modal == "privacy_notice":
@@ -1784,16 +1882,14 @@ with col_input:
     for metric, meta in sorted_metrics.items():
         if metric in display_metrics or metric in results:
             continue
-        raw = st.session_state.get(metric, "")
-        try:
-            value = float(raw) if raw else 0.0
-        except ValueError:
-            value = 0.0
+        value = st.session_state.manual_values.get(metric, 0.0)
         if value > 0:
             results[metric] = {**meta, "value": value}
 
     st.divider()
     interpret_clicked_bottom = st.button("Interpret Results", key="interpret_bottom", use_container_width=True)
+    with st.container(key="clear_all_values"):
+        st.button("Clear all values", key="clear_btn", on_click=_clear_all_values)
 
     interpret_clicked = interpret_clicked_top or interpret_clicked_bottom
 

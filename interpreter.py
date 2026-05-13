@@ -809,12 +809,12 @@ CANCER_MARKERS = {
 
 VITAMINS = {
     "ab12": {
-        "name": "Vitamin B12 (cobalamin)",
+        "name": "Active B12 (Holotranscobalamin)",
         "type": "hilo",
         "gender_specific": False,
         "range": (25.1, 165),
         "unit": "pmol/L",
-        "explanation": "Vitamin B12 is essential for making red blood cells, maintaining a healthy nervous system, and synthesising DNA. Your body can't produce it, so it must come from your diet (meat, fish, eggs, dairy) or supplements. B12 is stored in the liver in relatively large amounts, so deficiency tends to develop slowly over months or years. Vegetarians and vegans are at higher risk of deficiency because plant foods don't naturally contain B12. Absorption also requires a protein called intrinsic factor, produced in the stomach, so conditions affecting the stomach or gut can impair B12 uptake even if dietary intake is adequate.",
+        "explanation": "Active B12, also called holotranscobalamin (HoloTC), measures only the fraction of vitamin B12 in your blood that is bound to transcobalamin II and available for cells to actually use. This is roughly 20% of total serum B12 — the rest is bound to haptocorrin and cannot be taken up by tissues. Because it reflects only the biologically usable fraction, active B12 is a more sensitive and earlier indicator of deficiency than a standard total serum B12 test. B12 is essential for red blood cell production, DNA synthesis, and maintaining a healthy nervous system. Deficiency develops slowly due to liver stores, but is more common in vegans, vegetarians, older adults, and people with gut absorption problems.",
         "advice_high": "Very high B12 levels are less commonly investigated but can occasionally be associated with liver disease, certain blood cancers, or kidney failure. High levels from supplements or diet are generally not harmful, as excess B12 is usually excreted in urine. If you're not taking B12 supplements and your level is significantly elevated, mention it to your GP, who may want to check your liver function and blood count to rule out any underlying cause.",
         "advice_low": "Low B12 can cause a type of anaemia where red blood cells become abnormally large (macrocytic anaemia), along with neurological symptoms such as numbness or tingling in the hands and feet, difficulty walking, memory problems, and mood changes. If caught early, B12 deficiency is very treatable. For mild deficiency, oral supplements or dietary changes (more meat, fish, eggs, dairy, or fortified foods) may be sufficient. For more significant deficiency, or if absorption is the problem (as in pernicious anaemia or after gastric surgery), your GP may recommend B12 injections. It's important to treat B12 deficiency promptly because prolonged nerve damage can become difficult to reverse."
     },
